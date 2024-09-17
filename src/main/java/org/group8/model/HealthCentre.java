@@ -5,13 +5,13 @@ import org.group8.framework.*;
 
 import java.util.Random;
 
-public class MyHealthCentre extends HealthCentre {
+public class HealthCentre extends AbstractHealthCentre {
 
     private ArrivalProcess checkInProcess;
     private ServicePoint checkIn, doctor, lab, xRay, treatment;
     private Random decisionMaker = new Random();
 
-    public MyHealthCentre() {
+    public HealthCentre() {
         // Check-In process
         checkInProcess = new ArrivalProcess(new Negexp(15), eventList, EventType.ARR_CHECKIN);
 
@@ -32,6 +32,7 @@ public class MyHealthCentre extends HealthCentre {
     @Override
     protected void processEvent(Event e) {
         Patient p;
+        double nextStep;
         switch ((EventType) e.getType()) {
             case ARR_CHECKIN:
                 checkIn.addToQueue(new Patient());
@@ -45,21 +46,27 @@ public class MyHealthCentre extends HealthCentre {
 
             case DEP_DOCTOR:
                 p = doctor.removeFromQueue();
-                // Decision-making process (random)
-                int nextStep = decisionMaker.nextInt(100);
-                if (nextStep < 30) {
-                    lab.addToQueue(p);  // 30% chance of lab
-                } else if (nextStep < 70) {
-                    xRay.addToQueue(p);  // 40% chance of x-ray
+                // decision-making process (random based on enum probabilities)
+                nextStep = decisionMaker.nextDouble();
+                if (nextStep < DecisionProbability.LAB.getProbability()) {
+                    lab.addToQueue(p);  // Lab
+                } else if (nextStep < DecisionProbability.LAB.getProbability() + DecisionProbability.XRAY.getProbability()) {
+                    xRay.addToQueue(p);  // X-ray
                 } else {
-                    treatment.addToQueue(p);  // 30% chance of direct treatment
+                    treatment.addToQueue(p);  // Treatment
                 }
                 break;
 
             case DEP_LAB:
+                // here we can add some logic to decide where to go next
+                p = lab.removeFromQueue();
+                treatment.addToQueue(p);  // After lab, go to treatment
+                break;
+
             case DEP_XRAY:
-                p = e.getType() == EventType.DEP_LAB ? lab.removeFromQueue() : xRay.removeFromQueue();
-                treatment.addToQueue(p);  // After diagnostics, go to treatment
+                // here we can add some logic to decide where to go next
+                p = xRay.removeFromQueue();
+                treatment.addToQueue(p);  // After x-ray, go to treatment
                 break;
 
             case DEP_TREATMENT:
@@ -81,7 +88,12 @@ public class MyHealthCentre extends HealthCentre {
 
     @Override
     protected void statistics() {
+        System.out.println();
+        System.out.println("--- Simulation statistics ---");
         System.out.println("Simulation ended at time " + Clock.getInstance().getTime());
-        System.out.println("Results will be detailed here.");
+        System.out.println("Total patients arrived at healthcare centre: " + Patient.getTotalPatients());
+        System.out.println("Total patients completed the visit: " + Patient.getCompletedPatients());
+        System.out.println("Average time spent by all patients completed the visit: " + Patient.getTotalTime() / Patient.getCompletedPatients());
+        // Add more detailed statistics ...
     }
 }

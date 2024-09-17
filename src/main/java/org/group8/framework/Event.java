@@ -1,6 +1,6 @@
 package org.group8.framework;
 
-public class Event implements Comparable<Event>{
+public class Event implements Comparable<Event> {
 
     private IEventType type;
     private double time;
@@ -13,12 +13,15 @@ public class Event implements Comparable<Event>{
     public void setType(IEventType type) {
         this.type = type;
     }
+
     public IEventType getType() {
         return this.type;
     }
+
     public void setTime(double time) {
         this.time = time;
     }
+
     public double getTime() {
         return this.time;
     }

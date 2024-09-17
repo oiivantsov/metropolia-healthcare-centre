@@ -1,18 +1,15 @@
 package org.group8.framework;
 
-public abstract class HealthCentre {
+public abstract class AbstractHealthCentre {
 
     private double simulationTime = 0;
     private Clock clock;
 
     protected EventList eventList;
 
-    public HealthCentre() {
+    public AbstractHealthCentre() {
         clock = Clock.getInstance();
         eventList = new EventList();
-
-        // Service points created in simulator.model package in the Motor's child class
-
     }
 
     public void setSimulationTime(double time) {
@@ -43,6 +40,7 @@ public abstract class HealthCentre {
             processEvent(eventList.remove());
         }
     }
+
     protected abstract void processEvent(Event e);
 
     protected abstract void tryEventC();
@@ -50,9 +48,11 @@ public abstract class HealthCentre {
     private double currentTime() {
         return eventList.getNextTime();
     }
+
     private boolean simulate() {
         return clock.getTime() < simulationTime;
     }
+
     protected abstract void init();
 
     protected abstract void statistics();

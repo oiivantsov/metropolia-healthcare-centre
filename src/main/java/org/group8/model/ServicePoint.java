@@ -31,7 +31,7 @@ public class ServicePoint {
     }
 
     public void startService() {
-
+        if (queue.isEmpty()) return; // to avoid null-exception when queue is empty
         Trace.out(Trace.Level.INFO, "Starting service for patient " + queue.peek().getId());
 
         busy = true;
@@ -47,5 +47,4 @@ public class ServicePoint {
     public boolean hasQueue() {
         return !queue.isEmpty();
     }
-
 }

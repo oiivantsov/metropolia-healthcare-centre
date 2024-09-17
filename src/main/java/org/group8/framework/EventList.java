@@ -7,7 +7,6 @@ public class EventList {
     private PriorityQueue<Event> list = new PriorityQueue<Event>();
 
     public EventList() {
-
     }
 
     public Event remove() {
@@ -21,6 +20,9 @@ public class EventList {
     }
 
     public double getNextTime() {
+        if (list.isEmpty()) {
+            return Double.MAX_VALUE; // to avoid null-exception when queue is empty
+        }
         return list.peek().getTime();
     }
 }
