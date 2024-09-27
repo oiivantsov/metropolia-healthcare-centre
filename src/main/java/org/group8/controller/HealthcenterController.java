@@ -1,7 +1,7 @@
 package org.group8.controller;
 
 import org.group8.view.HealthcenterGUI;
-import org.group8.model.HealthCentre;
+import org.group8.simulator.model.HealthCentre;
 public class HealthcenterController {
 
     private HealthcenterGUI gui;

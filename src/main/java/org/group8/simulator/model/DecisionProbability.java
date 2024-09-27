@@ -1,4 +1,4 @@
-package org.group8.model;
+package org.group8.simulator.model;
 
 public enum DecisionProbability {
     LAB(0.3),

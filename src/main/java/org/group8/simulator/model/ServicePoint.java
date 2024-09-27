@@ -1,7 +1,11 @@
-package org.group8.model;
+package org.group8.simulator.model;
 
 import org.group8.distributions.*;
-import org.group8.framework.*;
+import org.group8.simulator.framework.*;
+import org.group8.simulator.framework.Clock;
+import org.group8.simulator.framework.Event;
+import org.group8.simulator.framework.EventList;
+import org.group8.simulator.framework.Trace;
 
 import java.util.LinkedList;
 import java.util.Queue;

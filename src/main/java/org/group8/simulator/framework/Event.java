@@ -1,4 +1,4 @@
-package org.group8.framework;
+package org.group8.simulator.framework;
 
 public class Event implements Comparable<Event> {
 

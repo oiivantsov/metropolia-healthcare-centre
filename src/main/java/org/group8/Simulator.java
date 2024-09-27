@@ -1,8 +1,6 @@
 package org.group8;
 
-import org.group8.framework.AbstractHealthCentre;
-import org.group8.framework.Trace;
-import org.group8.model.HealthCentre;
+import org.group8.simulator.framework.Trace;
 import org.group8.view.HealthcenterGUI;
 public class Simulator {
     

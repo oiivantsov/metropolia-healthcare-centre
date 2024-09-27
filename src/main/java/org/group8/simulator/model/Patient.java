@@ -1,7 +1,7 @@
-package org.group8.model;
+package org.group8.simulator.model;
 
-import org.group8.framework.Clock;
-import org.group8.framework.Trace;
+import org.group8.simulator.framework.Clock;
+import org.group8.simulator.framework.Trace;
 
 public class Patient {
     private double arrivalTime;
