@@ -1,7 +1,6 @@
 package org.group8.simulator.model;
 
 import org.group8.distributions.*;
-import org.group8.simulator.framework.*;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.Event;
 import org.group8.simulator.framework.EventList;
