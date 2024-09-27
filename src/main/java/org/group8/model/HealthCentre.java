@@ -96,4 +96,8 @@ public class HealthCentre extends AbstractHealthCentre {
         System.out.println("Average time spent by all patients completed the visit: " + Patient.getTotalTime() / Patient.getCompletedPatients());
         // Add more detailed statistics ...
     }
+
+    public String getOutputs() {
+        return ("--- Simulation statistics ---" + "\r\n" + ("Simulation ended at time " + Clock.getInstance().getTime()) + "\r\n" + ("Total patients arrived at healthcare centre: " + Patient.getTotalPatients()) + "\r\n" + ("Total patients completed the visit: " + Patient.getCompletedPatients()) + "\r\n" + ("Average time spent by all patients completed the visit: " + Patient.getTotalTime() / Patient.getCompletedPatients()));
+    }
 }
