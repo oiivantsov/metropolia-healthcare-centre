@@ -54,4 +54,10 @@ public class Patient {
     public static int getCompletedPatients() {
         return completedPatients;
     }
+
+    public static void reset() {
+        counter = 0;
+        totalTime = 0;
+        completedPatients = 0;
+    }
 }

@@ -1,0 +1,126 @@
+/* General styles for the entire scene - setting font size and font family */
+.root {
+    -fx-font-family: "Verdana", "Arial", sans-serif;  /* Readable font options */
+    -fx-font-size: 14px;  /* Set text size to 14 pixels for readability */
+    -fx-background-color: #1e1e1e;  /* Dark background for the root pane */
+    -fx-text-fill: #ffffff;  /* White text color for readability */
+}
+
+/* Button styling */
+.button {
+    -fx-font-size: 14px; /* Set button text size to 14px */
+    -fx-background-color: #3a3a3a;  /* Dark gray background for buttons */
+    -fx-text-fill: #ffffff;  /* White text color */
+    -fx-border-color: #5e5e5e;  /* Border to distinguish buttons */
+    -fx-border-radius: 5px;  /* Rounded corners */
+    -fx-background-radius: 5px;  /* Matching rounded corners */
+    -fx-min-width: 150px;
+}
+
+/* Button hover styling */
+.button:hover {
+    -fx-background-color: #505050;  /* Lighter gray when hovered */
+}
+
+.run-button {
+    -fx-background-color: #4caf50; /* Green background for the run button */
+    -fx-text-fill: #ffffff; /* White text color for contrast */
+    -fx-border-color: #388e3c; /* Darker green border */
+    -fx-border-radius: 5px;  /* Rounded corners */
+    -fx-background-radius: 5px;  /* Matching rounded corners */
+}
+
+/* Run button hover styling */
+.run-button:hover {
+    -fx-background-color: #45a049; /* Slightly darker green when hovered */
+}
+
+/* Label styling */
+.label {
+    -fx-font-size: 14px; /* Set label text size to 14px */
+    -fx-text-fill: #ffffff;  /* White text color */
+}
+
+/* Bold styling for service point labels */
+.service-point-label {
+}
+
+
+/* Text field styling */
+.text-field {
+    -fx-font-size: 14px; /* Set text field text size to 14px */
+    -fx-background-color: #2b2b2b;  /* Darker gray for text fields */
+    -fx-text-fill: #ffffff;  /* White text color */
+    -fx-border-color: #5e5e5e;  /* Border color for better visibility */
+    -fx-border-radius: 5px;  /* Rounded corners */
+    -fx-background-radius: 5px;  /* Matching rounded corners */
+}
+
+/* Slider styling */
+.slider {
+    -fx-font-size: 14px; /* Set slider text size to 14px (e.g., tick labels) */
+    -fx-control-inner-background: #3a3a3a;  /* Darker track background */
+    -fx-base: #707070;  /* Slider base color */
+    -fx-thumb: #c0c0c0;  /* Thumb color */
+}
+
+/* Menu styling */
+.menu-bar, .menu, .menu-item {
+    -fx-font-size: 14px; /* Set menu and menu item text size to 14px */
+    -fx-background-color: #2b2b2b; /* Dark background for menu */
+    -fx-text-fill: #ffffff; /* Light menu text */
+}
+
+/* Menu hover effect */
+.menu-item:hover {
+    -fx-background-color: #5a5a5a; /* Lighter hover color */
+}
+
+
+/* Alert dialog pane styling */
+.dialog-pane {
+    -fx-background-color: #2b2b2b; /* Dark background for the entire alert dialog */
+}
+
+/* Dialog pane header styling (for title and header text) */
+.dialog-pane .header-panel {
+    -fx-background-color: #3a3a3a; /* Darker background for the header section */
+    -fx-text-fill: #ffffff; /* White text color for the title */
+}
+
+/* Dialog pane content styling (for the message text) */
+.dialog-pane .content {
+    -fx-background-color: #2b2b2b; /* Dark background for the message content */
+    -fx-text-fill: #ffffff; /* White text color for the message */
+}
+
+/* Button styling in the dialog pane */
+.dialog-pane .button-bar .button {
+    -fx-background-color: #3a3a3a;  /* Dark background for buttons in alerts */
+    -fx-text-fill: #ffffff;  /* White text color */
+    -fx-border-color: #5e5e5e;  /* Border to distinguish buttons */
+    -fx-border-radius: 5px;  /* Rounded corners */
+    -fx-background-radius: 5px;  /* Matching rounded corners */
+}
+
+/* Button hover styling in the dialog pane */
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #505050; /* Lighter gray when hovered */
+}
+
+
+/* Tooltip styling */
+.tooltip {
+    -fx-background-color: #3a3a3a;  /* Dark gray tooltip background */
+    -fx-text-fill: #ffffff;  /* White text color */
+    -fx-border-color: #5e5e5e;  /* Border for tooltips */
+}
+
+/* Scrollbar styling */
+.scroll-bar {
+    -fx-background-color: #2b2b2b;  /* Dark background for scrollbar */
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #505050;  /* Lighter thumb for contrast */
+}

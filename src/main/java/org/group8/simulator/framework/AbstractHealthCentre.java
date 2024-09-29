@@ -7,7 +7,7 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
     private double simulationTime = 0;
     private long delay = 0;
 
-    // Object and boolean to control the simulation
+    // Object and boolean to control the simulation's thread
     private final Object lock = new Object();
     private boolean pause = false;
 
@@ -42,13 +42,20 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
         init(); // create first event
         while (simulate()) {
 
+            // check if thread is interrupted
+            if (Thread.currentThread().isInterrupted()) {
+                Trace.out(Trace.Level.INFO, "Simulation interrupted. Stopping...");
+                break;
+            }
+
             // this is the pause mechanism - monitor, which allows the simulation to be paused
             synchronized (lock) {
                 while (pause) {
                     try {
                         lock.wait();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Trace.out(Trace.Level.INFO, "Thread interrupted while waiting");
+                        return;
                     }
                 }
             }
@@ -97,7 +104,8 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Trace.out(Trace.Level.INFO, "Thread interrupted while sleeping");
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -20,6 +20,10 @@ public class Visualization extends Canvas implements IVisualization {
     public void clearDisplay() {
         gc.setFill(Color.LIGHTBLUE);
         gc.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+        // reset the position of the patients when new simulation starts
+        i = 0;
+        j = 10;
     }
 
     public void newPatient() {

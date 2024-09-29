@@ -14,4 +14,5 @@ public interface IControllerForV {
     void resumeSimulation();
     boolean isRunning();
     void setProbabilities(double lab, double xray, double treatment);
+    void setAverageTimes(double checkIn, double doctor, double xray, double lab, double treatment, double arrival);
 }

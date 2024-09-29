@@ -16,18 +16,17 @@ public class HealthCentre extends AbstractHealthCentre {
     private Random decisionMaker = new Random();
 
     public HealthCentre(IControllerForP controller) {
-
         super(controller);
 
         // Check-In process
-        checkInProcess = new ArrivalProcess(new Negexp(15), eventList, EventType.ARR_CHECKIN);
+        checkInProcess = new ArrivalProcess(new Negexp(AverageTimeConfig.getAverageArrivalTime()), eventList, EventType.ARR_CHECKIN);
 
         // Define service points
-        checkIn = new ServicePoint(new Negexp(3), eventList, EventType.DEP_CHECKIN);
-        doctor = new ServicePoint(new Negexp(5), eventList, EventType.DEP_DOCTOR);
-        lab = new ServicePoint(new Negexp(10), eventList, EventType.DEP_LAB);
-        xRay = new ServicePoint(new Negexp(8), eventList, EventType.DEP_XRAY);
-        treatment = new ServicePoint(new Negexp(12), eventList, EventType.DEP_TREATMENT);
+        checkIn = new ServicePoint(new Negexp(AverageTimeConfig.getAverageCheckInTime()), eventList, EventType.DEP_CHECKIN);
+        doctor = new ServicePoint(new Negexp(AverageTimeConfig.getAverageDoctorTime()), eventList, EventType.DEP_DOCTOR);
+        lab = new ServicePoint(new Negexp(AverageTimeConfig.getAverageLabTime()), eventList, EventType.DEP_LAB);
+        xRay = new ServicePoint(new Negexp(AverageTimeConfig.getAverageXRayTime()), eventList, EventType.DEP_XRAY);
+        treatment = new ServicePoint(new Negexp(AverageTimeConfig.getAverageTreatmentTime()), eventList, EventType.DEP_TREATMENT);
     }
 
     @Override
