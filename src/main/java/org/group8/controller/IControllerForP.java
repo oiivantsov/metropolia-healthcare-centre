@@ -9,5 +9,6 @@ public interface IControllerForP {
     void addPatientToXRayCanvas();
     void addPatientToLabCanvas();
     void addPatientToTreatmentCanvas();
+    void onSimulationEnd();
 
 }

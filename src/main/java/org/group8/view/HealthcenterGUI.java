@@ -468,10 +468,21 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     public void showStatistics(String statistics) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Statistics");
-        alert.setHeaderText(null);
-        alert.setContentText(statistics);
+        alert.setHeaderText("Simulation Statistics");
+
+        String formattedStatistics = """
+        %s
+        """.formatted(statistics);
+
+        // Set a custom width for the Alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setPrefWidth(600); // Set the preferred width for the dialog pane
+        applyTheme(alert.getDialogPane().getScene(), isBlackTheme); // Apply theme to the dialog
+
+        alert.setContentText(formattedStatistics);
         alert.showAndWait();
     }
+
 
     @Override
     public void clearDisplays() {
@@ -546,5 +557,20 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         } else {
             scene.getStylesheets().add(getClass().getResource(WHITE_THEME_CSS).toExternalForm());
         }
+    }
+
+    @Override
+    public void showSimulationEndAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Simulation Ended");
+        alert.setHeaderText(null);
+        alert.setContentText("The simulation has ended successfully.");
+
+        // Set a custom width for the Alert (optional)
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setPrefWidth(400);
+        applyTheme(dialogPane.getScene(), isBlackTheme);
+
+        alert.showAndWait();
     }
 }
