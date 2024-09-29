@@ -73,6 +73,7 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
 
         }
 
+        controller.onSimulationEnd();
         statistics();
 
     }

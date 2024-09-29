@@ -115,4 +115,12 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     public void setAverageTimes(double checkIn, double doctor, double lab, double xray, double treatment, double arrival) {
         AverageTimeConfig.setAllParameters(checkIn, doctor, lab, xray, treatment, arrival);
     }
+
+    @Override
+    public void onSimulationEnd() {
+        Platform.runLater(() -> {
+            gui.showSimulationEndAlert();
+            gui.showStatistics(centre.getStatistics());
+        });
+    }
 }

@@ -113,7 +113,6 @@ public class HealthCentre extends AbstractHealthCentre {
     public String getStatistics() {
         StringBuilder statisticsBuilder = new StringBuilder();
 
-        statisticsBuilder.append("--- Simulation Statistics ---\n");
         statisticsBuilder.append(String.format("Simulation ended at time: %.2f\n", Clock.getInstance().getTime()));
         statisticsBuilder.append(String.format("Total patients arrived at healthcare center: %d\n", Patient.getTotalPatients()));
         statisticsBuilder.append(String.format("Total patients completed the visit: %d\n", Patient.getCompletedPatients()));

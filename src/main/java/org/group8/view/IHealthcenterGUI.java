@@ -7,6 +7,7 @@ public interface IHealthcenterGUI {
     long getDelay();   // Method to get the delay
 
     void showStatistics(String statistics);
+    void showSimulationEndAlert();
     void clearDisplays();
 
     IVisualization getCheckInCanvas();
