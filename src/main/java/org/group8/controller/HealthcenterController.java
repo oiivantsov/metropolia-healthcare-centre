@@ -1,9 +1,12 @@
 package org.group8.controller;
 
 import javafx.application.Platform;
+import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.IHealthCentre;
+import org.group8.simulator.model.AverageTimeConfig;
 import org.group8.simulator.model.DecisionProbability;
 import org.group8.simulator.model.HealthCentre;
+import org.group8.simulator.model.Patient;
 import org.group8.view.IHealthcenterGUI;
 
 public class HealthcenterController implements IControllerForP, IControllerForV {
@@ -14,16 +17,29 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     public HealthcenterController(IHealthcenterGUI gui) {
         this.gui = gui;
     }
+
     public void setTime(int time) {
         centre.setSimulationTime(time);
     }
 
     @Override
     public void startSimulation() {
-        centre = new HealthCentre(this); // new thread for each simulation
+        // Delete the old thread
+        if (centre != null && ((Thread) centre).isAlive()) {
+            ((Thread) centre).interrupt();
+        }
+
+        // Set up new simulation with the current configuration
+        centre = new HealthCentre(this);
         centre.setSimulationTime(gui.getTime());
         centre.setDelay(gui.getDelay());
+
+        // Adjust common parameters
+        Clock.getInstance().setTime(0);
+        Patient.reset();
         gui.clearDisplays();
+
+        // Start the simulation
         ((Thread) centre).start();
     }
 
@@ -39,56 +55,34 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
 
     @Override
     public void addPatientToCheckInCanvas() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                gui.getCheckInCanvas().newPatient();
-            }
-        });
+        Platform.runLater(() -> gui.getCheckInCanvas().newPatient());
     }
 
     @Override
     public void addPatientToDoctorCanvas() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                gui.getDoctorCanvas().newPatient();
-            }
-        });
+        Platform.runLater(() -> gui.getDoctorCanvas().newPatient());
     }
 
     @Override
     public void addPatientToXRayCanvas() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                gui.getXrayCanvas().newPatient();
-            }
-        });
+        Platform.runLater(() -> gui.getXrayCanvas().newPatient());
     }
 
     @Override
     public void addPatientToLabCanvas() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                gui.getLabCanvas().newPatient();
-            }
-        });
+        Platform.runLater(() -> gui.getLabCanvas().newPatient());
     }
 
     @Override
     public void addPatientToTreatmentCanvas() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                gui.getTreatmentCanvas().newPatient();
-            }
-        });
+        Platform.runLater(() -> gui.getTreatmentCanvas().newPatient());
     }
 
     @Override
     public void showStatistics(String statistics) {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                String statistics = centre.getStatistics();
-                gui.showStatistics(statistics);
-            }
+        Platform.runLater(() -> {
+            String stats = centre.getStatistics();
+            gui.showStatistics(stats);
         });
     }
 
@@ -117,4 +111,8 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
         DecisionProbability.setProbabilities(lab, xray, treatment);
     }
 
+    @Override
+    public void setAverageTimes(double checkIn, double doctor, double lab, double xray, double treatment, double arrival) {
+        AverageTimeConfig.setAllParameters(checkIn, doctor, lab, xray, treatment, arrival);
+    }
 }
