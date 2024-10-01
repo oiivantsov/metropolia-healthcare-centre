@@ -1,18 +1,19 @@
 package org.group8.controller;
 
 import javafx.application.Platform;
+import org.group8.dao.AverageTimeDao;
+import org.group8.dao.ProbabilityDao;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.IHealthCentre;
-import org.group8.simulator.model.AverageTimeConfig;
-import org.group8.simulator.model.DecisionProbability;
-import org.group8.simulator.model.HealthCentre;
-import org.group8.simulator.model.Patient;
+import org.group8.simulator.model.*;
 import org.group8.view.IHealthcenterGUI;
 
 public class HealthcenterController implements IControllerForP, IControllerForV {
 
     private IHealthcenterGUI gui;
     private IHealthCentre centre;
+    private final ProbabilityDao probabilityDao = new ProbabilityDao();
+    private final AverageTimeDao averageTimeDao = new AverageTimeDao();
 
     public HealthcenterController(IHealthcenterGUI gui) {
         this.gui = gui;
@@ -108,12 +109,19 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
 
     @Override
     public void setProbabilities(double lab, double xray, double treatment) {
-        DecisionProbability.setProbabilities(lab, xray, treatment);
+        probabilityDao.update(new Probability("LAB", lab));
+        probabilityDao.update(new Probability("XRAY", xray));
+        probabilityDao.update(new Probability("TREATMENT", treatment));
     }
 
     @Override
     public void setAverageTimes(double checkIn, double doctor, double lab, double xray, double treatment, double arrival) {
-        AverageTimeConfig.setAllParameters(checkIn, doctor, lab, xray, treatment, arrival);
+        averageTimeDao.update(new AverageTime("check-in", checkIn));
+        averageTimeDao.update(new AverageTime("doctor", doctor));
+        averageTimeDao.update(new AverageTime("lab", lab));
+        averageTimeDao.update(new AverageTime("xray", xray));
+        averageTimeDao.update(new AverageTime("treatment", treatment));
+        averageTimeDao.update(new AverageTime("arrival", arrival));
     }
 
     @Override
@@ -123,4 +131,15 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
             gui.showStatistics(centre.getStatistics());
         });
     }
+
+    @Override
+    public double getProbability(String decisionType) {
+        return probabilityDao.find(decisionType).getProbability();
+    }
+
+    @Override
+    public double getAverageTime(String event) {
+        return averageTimeDao.find(event).getAverageTime();
+    }
+
 }

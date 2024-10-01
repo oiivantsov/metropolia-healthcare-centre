@@ -15,4 +15,6 @@ public interface IControllerForV {
     boolean isRunning();
     void setProbabilities(double lab, double xray, double treatment);
     void setAverageTimes(double checkIn, double doctor, double xray, double lab, double treatment, double arrival);
+    double getProbability(String decisionType);
+    double getAverageTime(String event);
 }

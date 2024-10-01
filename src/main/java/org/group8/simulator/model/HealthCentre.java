@@ -1,6 +1,7 @@
 package org.group8.simulator.model;
 
 import org.group8.controller.IControllerForP;
+import org.group8.dao.ProbabilityDao;
 import org.group8.distributions.Negexp;
 import org.group8.simulator.framework.AbstractHealthCentre;
 import org.group8.simulator.framework.ArrivalProcess;
@@ -19,14 +20,14 @@ public class HealthCentre extends AbstractHealthCentre {
         super(controller);
 
         // Check-In process
-        checkInProcess = new ArrivalProcess(new Negexp(AverageTimeConfig.getAverageArrivalTime()), eventList, EventType.ARR_CHECKIN);
+        checkInProcess = new ArrivalProcess(new Negexp(controller.getAverageTime("arrival")), eventList, EventType.ARR_CHECKIN);
 
         // Define service points
-        checkIn = new ServicePoint(new Negexp(AverageTimeConfig.getAverageCheckInTime()), eventList, EventType.DEP_CHECKIN);
-        doctor = new ServicePoint(new Negexp(AverageTimeConfig.getAverageDoctorTime()), eventList, EventType.DEP_DOCTOR);
-        lab = new ServicePoint(new Negexp(AverageTimeConfig.getAverageLabTime()), eventList, EventType.DEP_LAB);
-        xRay = new ServicePoint(new Negexp(AverageTimeConfig.getAverageXRayTime()), eventList, EventType.DEP_XRAY);
-        treatment = new ServicePoint(new Negexp(AverageTimeConfig.getAverageTreatmentTime()), eventList, EventType.DEP_TREATMENT);
+        checkIn = new ServicePoint(new Negexp(controller.getAverageTime("check-in")), eventList, EventType.DEP_CHECKIN);
+        doctor = new ServicePoint(new Negexp(controller.getAverageTime("doctor")), eventList, EventType.DEP_DOCTOR);
+        lab = new ServicePoint(new Negexp(controller.getAverageTime("lab")), eventList, EventType.DEP_LAB);
+        xRay = new ServicePoint(new Negexp(controller.getAverageTime("xray")), eventList, EventType.DEP_XRAY);
+        treatment = new ServicePoint(new Negexp(controller.getAverageTime("treatment")), eventList, EventType.DEP_TREATMENT);
     }
 
     @Override
@@ -56,10 +57,10 @@ public class HealthCentre extends AbstractHealthCentre {
                 p = doctor.removeFromQueue();
                 // decision-making process (random based on enum probabilities)
                 nextStep = decisionMaker.nextDouble();
-                if (nextStep < DecisionProbability.LAB.getProbability()) {
+                if (nextStep < controller.getProbability("LAB")) {
                     lab.addToQueue(p);  // Lab
                     controller.addPatientToLabCanvas();
-                } else if (nextStep < DecisionProbability.LAB.getProbability() + DecisionProbability.XRAY.getProbability()) {
+                } else if (nextStep < controller.getProbability("LAB") + controller.getProbability("XRAY")) {
                     xRay.addToQueue(p);  // X-ray
                     controller.addPatientToXRayCanvas();
                 } else {

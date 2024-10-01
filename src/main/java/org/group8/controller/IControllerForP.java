@@ -1,5 +1,7 @@
 package org.group8.controller;
 
+import org.group8.simulator.model.Probability;
+
 public interface IControllerForP {
 
     // Interface provided to the Healthcenter:
@@ -10,5 +12,7 @@ public interface IControllerForP {
     void addPatientToLabCanvas();
     void addPatientToTreatmentCanvas();
     void onSimulationEnd();
+    double getProbability(String decisionType);
+    double getAverageTime(String event);
 
 }
