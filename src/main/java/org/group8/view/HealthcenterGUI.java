@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import org.group8.controller.HealthcenterController;
 import org.group8.controller.IControllerForV;
 import org.group8.simulator.framework.Trace;
-import org.group8.simulator.model.AverageTimeConfig;
+import org.group8.simulator.model.AverageTime;
 import javafx.stage.Modality;
 
 public class HealthcenterGUI extends Application implements IHealthcenterGUI {
@@ -138,12 +138,21 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        TextField arrivalField = new TextField(String.valueOf(AverageTimeConfig.getAverageArrivalTime()));
-        TextField checkInField = new TextField(String.valueOf(AverageTimeConfig.getAverageCheckInTime()));
-        TextField doctorField = new TextField(String.valueOf(AverageTimeConfig.getAverageDoctorTime()));
-        TextField labField = new TextField(String.valueOf(AverageTimeConfig.getAverageLabTime()));
-        TextField xRayField = new TextField(String.valueOf(AverageTimeConfig.getAverageXRayTime()));
-        TextField treatmentField = new TextField(String.valueOf(AverageTimeConfig.getAverageTreatmentTime()));
+        // current average times in db
+        double arrivalTime = controller.getAverageTime("arrival");
+        double checkInTime = controller.getAverageTime("check-in");
+        double doctorTime = controller.getAverageTime("doctor");
+        double labTime = controller.getAverageTime("lab");
+        double xRayTime = controller.getAverageTime("xray");
+        double treatmentTime = controller.getAverageTime("treatment");
+
+        // text fields for average times
+        TextField arrivalField = new TextField(String.valueOf(arrivalTime));
+        TextField checkInField = new TextField(String.valueOf(checkInTime));
+        TextField doctorField = new TextField(String.valueOf(doctorTime));
+        TextField labField = new TextField(String.valueOf(labTime));
+        TextField xRayField = new TextField(String.valueOf(xRayTime));
+        TextField treatmentField = new TextField(String.valueOf(treatmentTime));
 
         grid.add(new Label("Average Arrival Time:"), 0, 0);
         grid.add(arrivalField, 1, 0);
@@ -209,9 +218,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.setTitle("Edit Probabilities");
 
-        labProbabilitySlider = createProbabilitySlider("Lab Probability");
-        xrayProbabilitySlider = createProbabilitySlider("X-Ray Probability");
-        treatmentProbabilitySlider = createProbabilitySlider("Treatment Probability");
+        labProbabilitySlider = createProbabilitySlider("Lab Probability", "LAB");
+        xrayProbabilitySlider = createProbabilitySlider("X-Ray Probability", "XRAY");
+        treatmentProbabilitySlider = createProbabilitySlider("Treatment Probability", "TREATMENT");
 
         labProbabilityValue = new Label("Lab: " + String.format("%.2f", labProbabilitySlider.getValue()));
         xrayProbabilityValue = new Label("X-Ray: " + String.format("%.2f", xrayProbabilitySlider.getValue()));
@@ -309,8 +318,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         return gridAndProbBox;
     }
 
-    private Slider createProbabilitySlider(String labelText) {
-        Slider slider = new Slider(0, 1, 0.33);
+    private Slider createProbabilitySlider(String labelText, String decisionType) {
+        double probability = controller.getProbability(decisionType);
+        Slider slider = new Slider(0, 1, probability);
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
         return slider;
