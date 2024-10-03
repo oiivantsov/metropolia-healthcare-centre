@@ -57,6 +57,16 @@
     -fx-background-radius: 5px;  /* Matching rounded corners */
 }
 
+.text-area {
+    -fx-font-size: 14px; /* Set text area text size to 14pt for better compatibility */
+    -fx-control-inner-background: #ffffff; /* Set inner background to white */
+    -fx-text-fill: #000000; /* Black text color */
+    -fx-border-color: #b0b0b0; /* Border color for better visibility */
+    -fx-border-radius: 5px; /* Rounded corners for the border */
+    -fx-background-radius: 5px; /* Matching rounded corners for the background */
+    -fx-padding: 10; /* Add padding inside the text area for better readability */
+}
+
 /* Slider styling */
 .slider {
     -fx-font-size: 14px; /* Set slider text size to 14px (e.g., tick labels) */

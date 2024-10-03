@@ -45,7 +45,7 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
             // check if thread is interrupted
             if (Thread.currentThread().isInterrupted()) {
                 Trace.out(Trace.Level.INFO, "Simulation interrupted. Stopping...");
-                break;
+                return;
             }
 
             // this is the pause mechanism - monitor, which allows the simulation to be paused
