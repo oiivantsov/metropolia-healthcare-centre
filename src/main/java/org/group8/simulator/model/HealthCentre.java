@@ -1,8 +1,8 @@
 package org.group8.simulator.model;
 
 import org.group8.controller.IControllerForP;
-import org.group8.dao.ProbabilityDao;
 import org.group8.distributions.Negexp;
+import org.group8.distributions.Poisson;
 import org.group8.simulator.framework.AbstractHealthCentre;
 import org.group8.simulator.framework.ArrivalProcess;
 import org.group8.simulator.framework.Clock;
@@ -20,14 +20,32 @@ public class HealthCentre extends AbstractHealthCentre {
         super(controller);
 
         // Check-In process
-        checkInProcess = new ArrivalProcess(new Negexp(controller.getAverageTime("arrival")), eventList, EventType.ARR_CHECKIN);
+        checkInProcess = createArrivalProcess("arrival", EventType.ARR_CHECKIN);
 
         // Define service points
-        checkIn = new ServicePoint(new Negexp(controller.getAverageTime("check-in")), eventList, EventType.DEP_CHECKIN);
-        doctor = new ServicePoint(new Negexp(controller.getAverageTime("doctor")), eventList, EventType.DEP_DOCTOR);
-        lab = new ServicePoint(new Negexp(controller.getAverageTime("lab")), eventList, EventType.DEP_LAB);
-        xRay = new ServicePoint(new Negexp(controller.getAverageTime("xray")), eventList, EventType.DEP_XRAY);
-        treatment = new ServicePoint(new Negexp(controller.getAverageTime("treatment")), eventList, EventType.DEP_TREATMENT);
+        checkIn = createServicePoint("check-in", EventType.DEP_CHECKIN);
+        doctor = createServicePoint("doctor", EventType.DEP_DOCTOR);
+        lab = createServicePoint("lab", EventType.DEP_LAB);
+        xRay = createServicePoint("xray", EventType.DEP_XRAY);
+        treatment = createServicePoint("treatment", EventType.DEP_TREATMENT);
+    }
+
+    public ArrivalProcess createArrivalProcess(String name, EventType eventType) {
+        Distribution distribution = controller.getDistributionObject(name);
+        return switch (distribution.getDistribution()) {
+            case "negexp" -> new ArrivalProcess(new Negexp(distribution.getAverageTime()), eventList, eventType);
+            case "poisson" -> new ArrivalProcess(new Poisson(distribution.getAverageTime()), eventList, eventType);
+            default -> null;
+        };
+    }
+
+    public ServicePoint createServicePoint(String name, EventType eventType) {
+        Distribution distribution = controller.getDistributionObject(name);
+        return switch (distribution.getDistribution()) {
+            case "negexp" -> new ServicePoint(new Negexp(distribution.getAverageTime()), eventList, eventType);
+            case "poisson" -> new ServicePoint(new Poisson(distribution.getAverageTime()), eventList, eventType);
+            default -> null;
+        };
     }
 
     @Override

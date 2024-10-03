@@ -2,33 +2,33 @@ package org.group8.dao;
 
 import jakarta.persistence.EntityManager;
 import org.group8.datasource.MariaDbJpaConnection;
-import org.group8.simulator.model.AverageTime;
+import org.group8.simulator.model.Distribution;
 
-public class AverageTimeDao {
-    public void persist(AverageTime averageTime) {
+public class DistributionDao {
+    public void persist(Distribution averageTime) {
         EntityManager em = MariaDbJpaConnection.getInstance();
         em.getTransaction().begin();
         em.persist(averageTime);
         em.getTransaction().commit();
     }
 
-    public AverageTime find(String event) {
+    public Distribution find(String event) {
         EntityManager em = MariaDbJpaConnection.getInstance();
-        AverageTime averageTime = em.find(AverageTime.class, event);
-        return averageTime;
+        Distribution distribution = em.find(Distribution.class, event);
+        return distribution;
     }
 
-    public void update(AverageTime averageTime) {
+    public void update(Distribution distribution) {
         EntityManager em = MariaDbJpaConnection.getInstance();
         em.getTransaction().begin();
-        em.merge(averageTime);
+        em.merge(distribution);
         em.getTransaction().commit();
     }
 
-    public void delete(AverageTime averageTime) {
+    public void delete(Distribution distribution) {
         EntityManager em = MariaDbJpaConnection.getInstance();
         em.getTransaction().begin();
-        em.remove(averageTime);
+        em.remove(distribution);
         em.getTransaction().commit();
     }
 }
