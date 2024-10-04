@@ -85,6 +85,10 @@ public class Visualization extends Canvas implements IVisualization {
         // Check if we need to move to the previous row
         if (i <= hPadding) {
             i = this.getWidth() - hPadding;  // Move to the last column
+            if (j <= vPadding) {
+                clearDisplay(); // Clear and reset if out of bounds
+                return;
+            }
             j -= (IMAGE_SIZE + elementsPadding);  // Move up to the previous row
         }
 
