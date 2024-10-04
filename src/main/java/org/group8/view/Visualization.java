@@ -99,14 +99,5 @@ public class Visualization extends Canvas implements IVisualization {
         gc.setFill(Color.LIGHTBLUE);
         gc.fillRect(i, j, IMAGE_SIZE, IMAGE_SIZE);
 
-
-        // Ensure we do not move above the first row
-        if (j <= vPadding) {
-            i = hPadding;
-            j = vPadding;
-            clearDisplay(); // Clear and reset if completely out of bounds
-            return;
-        }
-
     }
 }
