@@ -16,6 +16,7 @@ public interface IControllerForV {
     void setProbabilities(double lab, double xray, double treatment);
     void updateDistribution(String event, String distribution, double averageTime);
     double getProbability(String decisionType);
-    double getAverageTime(String event);
+    double getAverageTime(String eventName);
     String getDistribution(String event);
+    void setDefaultDistributions();
 }

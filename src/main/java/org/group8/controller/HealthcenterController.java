@@ -5,7 +5,6 @@ import org.group8.dao.DistributionDao;
 import org.group8.dao.ProbabilityDao;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.IHealthCentre;
-import org.group8.simulator.framework.Trace;
 import org.group8.simulator.model.*;
 import org.group8.view.IHealthcenterGUI;
 
@@ -81,6 +80,31 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     }
 
     @Override
+    public void removePatientFromCheckInCanvas() {
+        Platform.runLater(() -> gui.getCheckInCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromDoctorCanvas() {
+        Platform.runLater(() -> gui.getDoctorCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromXRayCanvas() {
+        Platform.runLater(() -> gui.getXrayCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromLabCanvas() {
+        Platform.runLater(() -> gui.getLabCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromTreatmentCanvas() {
+        Platform.runLater(() -> gui.getTreatmentCanvas().removePatient());
+    }
+
+    @Override
     public void showStatistics(String statistics) {
         Platform.runLater(() -> {
             String stats = centre.getStatistics();
@@ -123,7 +147,7 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     @Override
     public void onSimulationEnd() {
         Platform.runLater(() -> {
-            gui.showSimulationEndAlert();
+            gui.endSimulation();
             gui.showStatistics(centre.getStatistics());
         });
     }
@@ -134,8 +158,8 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     }
 
     @Override
-    public double getAverageTime(String event) {
-        return distributionDao.find(event).getAverageTime();
+    public double getAverageTime(String eventName) {
+        return distributionDao.find(eventName).getAverageTime();
     }
 
     @Override
@@ -148,4 +172,13 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
         return distributionDao.find(event);
     }
 
+    @Override
+    public void setDefaultDistributions() {
+        distributionDao.update(new Distribution("arrival", "negexp", 15));
+        distributionDao.update(new Distribution("check-in", "negexp", 3));
+        distributionDao.update(new Distribution("doctor", "negexp", 5));
+        distributionDao.update(new Distribution("lab", "negexp", 10));
+        distributionDao.update(new Distribution("xray", "negexp", 8));
+        distributionDao.update(new Distribution("treatment", "negexp", 12));
+    }
 }

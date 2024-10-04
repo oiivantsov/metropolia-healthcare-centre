@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.group8.controller.HealthcenterController;
 import org.group8.controller.IControllerForV;
@@ -27,6 +28,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     // time and delay fields
     private TextField setTimeField;
     private TextField setDelayField;
+
+    // status label
+    private Label statusLabel;
 
     // buttons
     private Button runButton;
@@ -69,9 +73,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     public void start(Stage primaryStage) {
         setupPrimaryStage(primaryStage);
         MenuBar menuBar = setupMenuBar();
-        HBox gridAndProbBox = setupControlPanel();
+        VBox controlPanel = setupControlPanel();
         HBox servicePointsBox = setupServicePoints();
-        VBox mainLayout = new VBox(menuBar, gridAndProbBox, servicePointsBox);
+        VBox mainLayout = new VBox(menuBar, controlPanel, servicePointsBox);
         Scene scene = new Scene(mainLayout, 1400, 800);
         applyTheme(scene, isBlackTheme);
 
@@ -157,6 +161,14 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         // Create an observable list of distribution options
         ObservableList<String> distributionOptions = FXCollections.observableArrayList("negexp", "poisson");
 
+        // Create labels for service points
+        Label arrivalLabel = new Label("Arrival");
+        Label checkInLabel = new Label("Check-In");
+        Label doctorLabel = new Label("Doctor");
+        Label labLabel = new Label("Lab");
+        Label xRayLabel = new Label("X-Ray");
+        Label treatmentLabel = new Label("Treatment");
+
         // Create text fields for average times
         TextField arrivalField = new TextField(String.valueOf(arrivalTime));
         TextField checkInField = new TextField(String.valueOf(checkInTime));
@@ -180,32 +192,42 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         treatmentComboBox.setValue(treatmentDistribution);
 
         // Add labels and fields to grid
-        grid.add(new Label("Distribution"), 0, 0);
-        grid.add(new Label("Average Time"), 1, 0);
+        grid.add(new Label("Distribution"), 1, 0);
+        grid.add(new Label("Average Time"), 2, 0);
 
         // Add combo boxes and text fields
-        grid.add(arrivalComboBox, 0, 1);
-        grid.add(arrivalField, 1, 1);
+        grid.add(arrivalLabel, 0, 1);
+        grid.add(arrivalComboBox, 1, 1);
+        grid.add(arrivalField, 2, 1);
 
-        grid.add(checkInComboBox, 0, 2);
-        grid.add(checkInField, 1, 2);
+        grid.add(checkInLabel, 0, 2);
+        grid.add(checkInComboBox, 1, 2);
+        grid.add(checkInField, 2, 2);
 
-        grid.add(doctorComboBox, 0, 3);
-        grid.add(doctorField, 1, 3);
+        grid.add(doctorLabel, 0, 3);
+        grid.add(doctorComboBox, 1, 3);
+        grid.add(doctorField, 2, 3);
 
-        grid.add(labComboBox, 0, 4);
-        grid.add(labField, 1, 4);
+        grid.add(labLabel, 0, 4);
+        grid.add(labComboBox, 1, 4);
+        grid.add(labField, 2, 4);
 
-        grid.add(xRayComboBox, 0, 5);
-        grid.add(xRayField, 1, 5);
+        grid.add(xRayLabel, 0, 5);
+        grid.add(xRayComboBox, 1, 5);
+        grid.add(xRayField, 2, 5);
 
-        grid.add(treatmentComboBox, 0, 6);
-        grid.add(treatmentField, 1, 6);
+        grid.add(treatmentLabel, 0, 6);
+        grid.add(treatmentComboBox, 1, 6);
+        grid.add(treatmentField, 2, 6);
 
         // Create save button
         Button saveButton = new Button("Save");
         saveButton.setPadding(new Insets(10, 20, 10, 20));
         saveButton.setDisable(true); // Disable save button initially
+
+        // Create Set Default button
+        Button setDefaultButton = new Button("Set Default");
+        setDefaultButton.setPadding(new Insets(10, 20, 10, 20));
 
         // Add listeners to validate input fields and enable save button when any field changes
         arrivalField.textProperty().addListener((observable, oldValue, newValue) -> validateAndEnableSaveButton(saveButton, arrivalField, checkInField, doctorField, labField, xRayField, treatmentField));
@@ -247,14 +269,40 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
             dialog.close();
         });
 
-        VBox layout = new VBox(10, grid, saveButton);
+        setDefaultButton.setOnAction(e -> {
+            controller.setDefaultDistributions();
+            refreshDistributionDialogFields(arrivalField, checkInField, doctorField, labField, xRayField, treatmentField,
+                    arrivalComboBox, checkInComboBox, doctorComboBox, labComboBox, xRayComboBox, treatmentComboBox);
+        });
+
+        HBox buttonsBox = new HBox(10, saveButton, setDefaultButton);
+        buttonsBox.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10, grid, buttonsBox);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(layout, 400, 400);
+        Scene scene = new Scene(layout, 600, 400);
         applyTheme(scene, isBlackTheme);
         dialog.setScene(scene);
         dialog.showAndWait();
+    }
+
+    private void refreshDistributionDialogFields(TextField arrivalField, TextField checkInField, TextField doctorField, TextField labField, TextField xRayField, TextField treatmentField,
+                                                 ComboBox<String> arrivalComboBox, ComboBox<String> checkInComboBox, ComboBox<String> doctorComboBox, ComboBox<String> labComboBox, ComboBox<String> xRayComboBox, ComboBox<String> treatmentComboBox) {
+        arrivalField.setText(String.valueOf(controller.getAverageTime("arrival")));
+        checkInField.setText(String.valueOf(controller.getAverageTime("check-in")));
+        doctorField.setText(String.valueOf(controller.getAverageTime("doctor")));
+        labField.setText(String.valueOf(controller.getAverageTime("lab")));
+        xRayField.setText(String.valueOf(controller.getAverageTime("xray")));
+        treatmentField.setText(String.valueOf(controller.getAverageTime("treatment")));
+
+        arrivalComboBox.setValue(controller.getDistribution("arrival"));
+        checkInComboBox.setValue(controller.getDistribution("check-in"));
+        doctorComboBox.setValue(controller.getDistribution("doctor"));
+        labComboBox.setValue(controller.getDistribution("lab"));
+        xRayComboBox.setValue(controller.getDistribution("xray"));
+        treatmentComboBox.setValue(controller.getDistribution("treatment"));
     }
 
     private void validateAndEnableSaveButton(Button saveButton, TextField... fields) {
@@ -326,13 +374,13 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         dialog.showAndWait();
     }
 
-    private HBox setupControlPanel() {
+    private VBox setupControlPanel() {
         setTimeField = new TextField();
         setTimeField.setPromptText("Set Time, e.g., 1000");
         updateTimeButton = new Button("Update Time");
 
         setDelayField = new TextField();
-        setDelayField.setPromptText("Set Delay, e.g., 100");
+        setDelayField.setPromptText("Set Delay in ms");
         updateDelayButton = new Button("Update Delay");
 
         speedUpButton = new Button("Speed Up");
@@ -348,9 +396,14 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         statisticsButton = new Button("Statistics");
         statisticsButton.setMinWidth(100);
 
+        // Status label
+        statusLabel = new Label("Simulation Status: Not Running");
+        statusLabel.setMaxWidth(Double.MAX_VALUE); // Allow label to expand to full width
+        statusLabel.setAlignment(Pos.CENTER_LEFT); // Align text inside label to the left
+        statusLabel.setTextAlignment(TextAlignment.LEFT); // Align text within the label
+
         disableInitialButtons();
         addInputValidationListeners();
-
         setupEventHandlers();
 
         GridPane gridPane = new GridPane();
@@ -367,13 +420,19 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         gridPane.add(stopButton, 1, 2);
         gridPane.add(statisticsButton, 3, 2);
 
-        HBox gridAndProbBox = new HBox();
-        gridAndProbBox.setSpacing(150);
-        gridAndProbBox.setPadding(new Insets(40, 10, 30, 10));
-        gridAndProbBox.setAlignment(Pos.CENTER);
-        gridAndProbBox.getChildren().addAll(gridPane);
+        HBox gridBox = new HBox();
+        gridBox.setSpacing(150);
+        gridBox.setPadding(new Insets(20, 10, 30, 10));
+        gridBox.setAlignment(Pos.CENTER);
+        gridBox.getChildren().addAll(gridPane);
 
-        return gridAndProbBox;
+        // Main container
+        VBox controlPanel = new VBox();
+        controlPanel.setPadding(new Insets(10));
+        controlPanel.getChildren().addAll(statusLabel, gridBox);
+        controlPanel.setAlignment(Pos.CENTER); // Align the entire VBox to the top-right
+
+        return controlPanel;
     }
 
     private Slider createProbabilitySlider(String labelText, String decisionType) {
@@ -438,14 +497,17 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
     private void startSimulation() {
         controller.startSimulation();
+        statusLabel.setText("Simulation Status: Running");
         activateButtons();
     }
 
     private void toggleSimulation() {
         if (controller.isRunning()) {
             controller.stopSimulation();
+            statusLabel.setText("Simulation Status: Paused");
         } else {
             controller.resumeSimulation();
+            statusLabel.setText("Simulation Status: Running");
         }
     }
 
@@ -662,7 +724,17 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     }
 
     @Override
-    public void showSimulationEndAlert() {
+    public void endSimulation() {
+        statusLabel.setText("Simulation Status: Ended");
+
+        // deactivating buttons
+        stopButton.setDisable(true);
+        speedUpButton.setDisable(true);
+        speedDownButton.setDisable(true);
+        updateTimeButton.setDisable(true);
+        updateDelayButton.setDisable(true);
+
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Simulation Ended");
         alert.setHeaderText(null);
@@ -675,4 +747,5 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
         alert.showAndWait();
     }
+
 }

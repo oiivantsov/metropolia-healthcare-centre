@@ -66,12 +66,14 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_CHECKIN:
+                controller.removePatientFromCheckInCanvas();
                 p = checkIn.removeFromQueue();
                 doctor.addToQueue(p);  // Move to doctor
                 controller.addPatientToDoctorCanvas();
                 break;
 
             case DEP_DOCTOR:
+                controller.removePatientFromDoctorCanvas();
                 p = doctor.removeFromQueue();
                 // decision-making process (random based on enum probabilities)
                 nextStep = decisionMaker.nextDouble();
@@ -88,6 +90,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_LAB:
+                controller.removePatientFromLabCanvas();
                 // here we can add some logic to decide where to go next
                 p = lab.removeFromQueue();
                 treatment.addToQueue(p);  // After lab, go to treatment
@@ -95,6 +98,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_XRAY:
+                controller.removePatientFromXRayCanvas();
                 // here we can add some logic to decide where to go next
                 p = xRay.removeFromQueue();
                 treatment.addToQueue(p);  // After x-ray, go to treatment
@@ -102,6 +106,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_TREATMENT:
+                controller.removePatientFromTreatmentCanvas();
                 p = treatment.removeFromQueue();
                 p.setDepartureTime(Clock.getInstance().getTime());
                 p.report();

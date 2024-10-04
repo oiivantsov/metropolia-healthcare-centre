@@ -12,9 +12,17 @@ public interface IControllerForP {
     void addPatientToXRayCanvas();
     void addPatientToLabCanvas();
     void addPatientToTreatmentCanvas();
+
+    void removePatientFromCheckInCanvas();
+    void removePatientFromDoctorCanvas();
+    void removePatientFromXRayCanvas();
+    void removePatientFromLabCanvas();
+    void removePatientFromTreatmentCanvas();
+
     void onSimulationEnd();
     double getProbability(String decisionType);
     double getAverageTime(String event);
     String getDistribution(String event);
     Distribution getDistributionObject(String event);
+
 }

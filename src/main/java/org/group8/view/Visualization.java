@@ -12,7 +12,9 @@ public class Visualization extends Canvas implements IVisualization {
     double i = 15;  // Start with some padding from the left
     double j = 15;  // Start with some padding from the top
 
-    private final double padding = 10; // Padding around the edges
+    private final double hPadding = 15; // Horizontal padding
+    private final double vPadding = 20; // Vertical padding
+    private final double elementsPadding = 5; // Padding between elements
     private final double IMAGE_SIZE = 25; // Size of the images
 
     // Load images
@@ -35,13 +37,13 @@ public class Visualization extends Canvas implements IVisualization {
         gc.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         // Reset the position of the patients when a new simulation starts
-        i = padding + 5;
-        j = padding + 10;
+        i = hPadding;
+        j = vPadding;
     }
 
     public void newPatient(String state) {
         // Set the fill color (black or another color to ensure visibility)
-        gc.setFill(Color.BLACK);
+        gc.setFill(Color.LIGHTBLUE);
 
         // Draw the corresponding image for the patient state
         switch (state) {
@@ -65,16 +67,46 @@ public class Visualization extends Canvas implements IVisualization {
         }
 
         // Update position for the next patient
-        i += 30;  // Adjust horizontal spacing to avoid overlap
+        i += IMAGE_SIZE + elementsPadding;  // Adjust horizontal spacing to avoid overlap
 
-        if (i >= this.getWidth() - padding - 5) {
-            i = padding + 5;
-            j += 30;  // Move down to the next row if reaching the edge
+        if (i >= this.getWidth() - hPadding) {
+            i = hPadding;
+            j += IMAGE_SIZE + elementsPadding;  // Move down to the next row if reaching the edge
         }
 
         // Ensure patients stay within bounds vertically, reset if necessary
-        if (j >= this.getHeight() - padding) {
+        if (j >= this.getHeight() - vPadding) {
             clearDisplay(); // Clear and reset if out of bounds
         }
+    }
+
+    public void removePatient() {
+
+        // Check if we need to move to the previous row
+        if (i <= hPadding) {
+            i = this.getWidth() - hPadding;  // Move to the last column
+            j -= (IMAGE_SIZE + elementsPadding);  // Move up to the previous row
+        }
+
+        // Adjust the horizontal position
+        i -= (IMAGE_SIZE + elementsPadding);
+
+        // Clear the last patient drawn
+        gc.clearRect(i + 1, j + 1, IMAGE_SIZE - 2, IMAGE_SIZE - 2);
+        // gc.clearRect(i, j, IMAGE_SIZE, IMAGE_SIZE);
+
+        // Redraw the background to maintain consistency
+        gc.setFill(Color.LIGHTBLUE);
+        gc.fillRect(i, j, IMAGE_SIZE, IMAGE_SIZE);
+
+
+        // Ensure we do not move above the first row
+        if (j <= vPadding) {
+            i = hPadding;
+            j = vPadding;
+            clearDisplay(); // Clear and reset if completely out of bounds
+            return;
+        }
+
     }
 }
