@@ -1,7 +1,7 @@
 package org.group8.controller;
 
 import javafx.application.Platform;
-import org.group8.dao.AverageTimeDao;
+import org.group8.dao.DistributionDao;
 import org.group8.dao.ProbabilityDao;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.IHealthCentre;
@@ -13,7 +13,7 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     private IHealthcenterGUI gui;
     private IHealthCentre centre;
     private final ProbabilityDao probabilityDao = new ProbabilityDao();
-    private final AverageTimeDao averageTimeDao = new AverageTimeDao();
+    private final DistributionDao distributionDao = new DistributionDao();
 
     public HealthcenterController(IHealthcenterGUI gui) {
         this.gui = gui;
@@ -56,27 +56,52 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
 
     @Override
     public void addPatientToCheckInCanvas() {
-        Platform.runLater(() -> gui.getCheckInCanvas().newPatient());
+        Platform.runLater(() -> gui.getCheckInCanvas().newPatient("sick"));
     }
 
     @Override
     public void addPatientToDoctorCanvas() {
-        Platform.runLater(() -> gui.getDoctorCanvas().newPatient());
+        Platform.runLater(() -> gui.getDoctorCanvas().newPatient("doctor"));
     }
 
     @Override
     public void addPatientToXRayCanvas() {
-        Platform.runLater(() -> gui.getXrayCanvas().newPatient());
+        Platform.runLater(() -> gui.getXrayCanvas().newPatient("xray"));
     }
 
     @Override
     public void addPatientToLabCanvas() {
-        Platform.runLater(() -> gui.getLabCanvas().newPatient());
+        Platform.runLater(() -> gui.getLabCanvas().newPatient("lab"));
     }
 
     @Override
     public void addPatientToTreatmentCanvas() {
-        Platform.runLater(() -> gui.getTreatmentCanvas().newPatient());
+        Platform.runLater(() -> gui.getTreatmentCanvas().newPatient("treatment"));
+    }
+
+    @Override
+    public void removePatientFromCheckInCanvas() {
+        Platform.runLater(() -> gui.getCheckInCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromDoctorCanvas() {
+        Platform.runLater(() -> gui.getDoctorCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromXRayCanvas() {
+        Platform.runLater(() -> gui.getXrayCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromLabCanvas() {
+        Platform.runLater(() -> gui.getLabCanvas().removePatient());
+    }
+
+    @Override
+    public void removePatientFromTreatmentCanvas() {
+        Platform.runLater(() -> gui.getTreatmentCanvas().removePatient());
     }
 
     @Override
@@ -115,19 +140,14 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     }
 
     @Override
-    public void setAverageTimes(double checkIn, double doctor, double lab, double xray, double treatment, double arrival) {
-        averageTimeDao.update(new AverageTime("check-in", checkIn));
-        averageTimeDao.update(new AverageTime("doctor", doctor));
-        averageTimeDao.update(new AverageTime("lab", lab));
-        averageTimeDao.update(new AverageTime("xray", xray));
-        averageTimeDao.update(new AverageTime("treatment", treatment));
-        averageTimeDao.update(new AverageTime("arrival", arrival));
+    public void updateDistribution(String event, String distribution, double averageTime) {
+        distributionDao.update(new Distribution(event, distribution, averageTime));
     }
 
     @Override
     public void onSimulationEnd() {
         Platform.runLater(() -> {
-            gui.showSimulationEndAlert();
+            gui.endSimulation();
             gui.showStatistics(centre.getStatistics());
         });
     }
@@ -138,8 +158,27 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
     }
 
     @Override
-    public double getAverageTime(String event) {
-        return averageTimeDao.find(event).getAverageTime();
+    public double getAverageTime(String eventName) {
+        return distributionDao.find(eventName).getAverageTime();
     }
 
+    @Override
+    public String getDistribution(String event) {
+        return distributionDao.find(event).getDistribution();
+    }
+
+    @Override
+    public Distribution getDistributionObject(String event) {
+        return distributionDao.find(event);
+    }
+
+    @Override
+    public void setDefaultDistributions() {
+        distributionDao.update(new Distribution("arrival", "negexp", 15));
+        distributionDao.update(new Distribution("check-in", "negexp", 3));
+        distributionDao.update(new Distribution("doctor", "negexp", 5));
+        distributionDao.update(new Distribution("lab", "negexp", 10));
+        distributionDao.update(new Distribution("xray", "negexp", 8));
+        distributionDao.update(new Distribution("treatment", "negexp", 12));
+    }
 }

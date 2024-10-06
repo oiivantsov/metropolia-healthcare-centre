@@ -1,9 +1,8 @@
 package org.group8.simulator.model;
 
 import org.group8.controller.IControllerForP;
-import org.group8.dao.ProbabilityDao;
-import org.group8.dao.SimulationResultsDao;
 import org.group8.distributions.Negexp;
+import org.group8.distributions.Poisson;
 import org.group8.simulator.framework.AbstractHealthCentre;
 import org.group8.simulator.framework.ArrivalProcess;
 import org.group8.simulator.framework.Clock;
@@ -21,14 +20,32 @@ public class HealthCentre extends AbstractHealthCentre {
         super(controller);
 
         // Check-In process
-        checkInProcess = new ArrivalProcess(new Negexp(controller.getAverageTime("arrival")), eventList, EventType.ARR_CHECKIN);
+        checkInProcess = createArrivalProcess("arrival", EventType.ARR_CHECKIN);
 
         // Define service points
-        checkIn = new ServicePoint(new Negexp(controller.getAverageTime("check-in")), eventList, EventType.DEP_CHECKIN);
-        doctor = new ServicePoint(new Negexp(controller.getAverageTime("doctor")), eventList, EventType.DEP_DOCTOR);
-        lab = new ServicePoint(new Negexp(controller.getAverageTime("lab")), eventList, EventType.DEP_LAB);
-        xRay = new ServicePoint(new Negexp(controller.getAverageTime("xray")), eventList, EventType.DEP_XRAY);
-        treatment = new ServicePoint(new Negexp(controller.getAverageTime("treatment")), eventList, EventType.DEP_TREATMENT);
+        checkIn = createServicePoint("check-in", EventType.DEP_CHECKIN);
+        doctor = createServicePoint("doctor", EventType.DEP_DOCTOR);
+        lab = createServicePoint("lab", EventType.DEP_LAB);
+        xRay = createServicePoint("xray", EventType.DEP_XRAY);
+        treatment = createServicePoint("treatment", EventType.DEP_TREATMENT);
+    }
+
+    public ArrivalProcess createArrivalProcess(String name, EventType eventType) {
+        Distribution distribution = controller.getDistributionObject(name);
+        return switch (distribution.getDistribution()) {
+            case "negexp" -> new ArrivalProcess(new Negexp(distribution.getAverageTime()), eventList, eventType);
+            case "poisson" -> new ArrivalProcess(new Poisson(distribution.getAverageTime()), eventList, eventType);
+            default -> null;
+        };
+    }
+
+    public ServicePoint createServicePoint(String name, EventType eventType) {
+        Distribution distribution = controller.getDistributionObject(name);
+        return switch (distribution.getDistribution()) {
+            case "negexp" -> new ServicePoint(new Negexp(distribution.getAverageTime()), eventList, eventType);
+            case "poisson" -> new ServicePoint(new Poisson(distribution.getAverageTime()), eventList, eventType);
+            default -> null;
+        };
     }
 
     @Override
@@ -49,12 +66,14 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_CHECKIN:
+                controller.removePatientFromCheckInCanvas();
                 p = checkIn.removeFromQueue();
                 doctor.addToQueue(p);  // Move to doctor
                 controller.addPatientToDoctorCanvas();
                 break;
 
             case DEP_DOCTOR:
+                controller.removePatientFromDoctorCanvas();
                 p = doctor.removeFromQueue();
                 // decision-making process (random based on enum probabilities)
                 nextStep = decisionMaker.nextDouble();
@@ -71,6 +90,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_LAB:
+                controller.removePatientFromLabCanvas();
                 // here we can add some logic to decide where to go next
                 p = lab.removeFromQueue();
                 treatment.addToQueue(p);  // After lab, go to treatment
@@ -78,6 +98,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_XRAY:
+                controller.removePatientFromXRayCanvas();
                 // here we can add some logic to decide where to go next
                 p = xRay.removeFromQueue();
                 treatment.addToQueue(p);  // After x-ray, go to treatment
@@ -85,6 +106,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 break;
 
             case DEP_TREATMENT:
+                controller.removePatientFromTreatmentCanvas();
                 p = treatment.removeFromQueue();
                 p.setDepartureTime(Clock.getInstance().getTime());
                 p.report();
@@ -109,15 +131,7 @@ public class HealthCentre extends AbstractHealthCentre {
         System.out.println("Total patients arrived at healthcare centre: " + Patient.getTotalPatients());
         System.out.println("Total patients completed the visit: " + Patient.getCompletedPatients());
         System.out.println("Average time spent by all patients completed the visit: " + Patient.getTotalTime() / Patient.getCompletedPatients());
-
-        // Create the DAO instance
-        SimulationResultsDao simulationResultsDao = new SimulationResultsDao();
-
-        // Create the manager, passing the DAO
-        SimulationResultsManager simulationResultsManager = new SimulationResultsManager(simulationResultsDao);
-
-        // Assuming `controller` is your IControllerForP instance
-        simulationResultsManager.gatherAndSaveSimulationData(controller);
+        // Add more detailed statistics ...
     }
 
     public String getStatistics() {
@@ -135,47 +149,5 @@ public class HealthCentre extends AbstractHealthCentre {
 
         return statisticsBuilder.toString();
     }
-
-    public class SimulationResultsManager {
-
-        private SimulationResultsDao simulationResultsDao;
-
-        public SimulationResultsManager(SimulationResultsDao simulationResultsDao) {
-            this.simulationResultsDao = simulationResultsDao;
-        }
-
-        public void gatherAndSaveSimulationData(IControllerForP controller) {
-
-            // Calculation for patient completion time
-            int completedPatients = Patient.getCompletedPatients();
-            double averageTime = (completedPatients > 0) ? Patient.getTotalTime() / (double) completedPatients : 0.0;
-            double endTime = Clock.getInstance().getTime();
-
-            // Probabilities
-            double labProbability = controller.getProbability("LAB");
-            double xrayProbability = controller.getProbability("XRAY");
-            double treatmentProbability = 1.0 - (labProbability + xrayProbability);
-
-            // Time-related values
-            double arrivalTime = controller.getAverageTime("arrival");
-            double checkInTime = controller.getAverageTime("check-in");
-            double doctorTime = controller.getAverageTime("doctor");
-            double labTime = controller.getAverageTime("lab");
-            double xrayTime = controller.getAverageTime("xray");
-            double treatmentTime = controller.getAverageTime("treatment");
-
-            // Create SimulationResults object using the simplified constructor
-            SimulationResults simulationResults = new SimulationResults(
-                    averageTime, Patient.getTotalPatients(), completedPatients,
-                    labProbability, xrayProbability, treatmentProbability,
-                    arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime
-            );
-
-            // Persist the new results
-            simulationResultsDao.persist(simulationResults);
-        }
-    }
-
-
 
 }

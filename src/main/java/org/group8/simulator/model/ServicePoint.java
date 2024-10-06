@@ -12,13 +12,13 @@ import java.util.Queue;
 public class ServicePoint {
 
     private final Queue<Patient> queue = new LinkedList<>();
-    private final ContinuousGenerator generator;
+    private final SampleGenerator generator;  // Use the common interface
     private final EventList eventList;
     private final EventType scheduledEventType;
 
     private boolean busy = false;
 
-    public ServicePoint(ContinuousGenerator g, EventList list, EventType type) {
+    public ServicePoint(SampleGenerator g, EventList list, EventType type) {
         this.generator = g;
         this.eventList = list;
         this.scheduledEventType = type;
@@ -39,7 +39,7 @@ public class ServicePoint {
 
         busy = true;
         Patient p = queue.peek();
-        double serviceTime = generator.sample();
+        double serviceTime = generator.sampleAsDouble();
         eventList.add(new Event(scheduledEventType, Clock.getInstance().getTime() + serviceTime));
     }
 
