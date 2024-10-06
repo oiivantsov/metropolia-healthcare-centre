@@ -10,6 +10,7 @@ import org.group8.simulator.framework.ArrivalProcess;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.Event;
 
+import java.util.List;
 import java.util.Random;
 
 public class HealthCentre extends AbstractHealthCentre {

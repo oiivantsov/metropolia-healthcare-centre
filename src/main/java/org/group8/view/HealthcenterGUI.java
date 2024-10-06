@@ -15,8 +15,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.group8.controller.HealthcenterController;
 import org.group8.controller.IControllerForV;
+import org.group8.dao.SimulationResultsDao;
 import org.group8.simulator.framework.Trace;
 import javafx.stage.Modality;
+import org.group8.simulator.model.SimulationResults;
+
+import java.util.List;
 
 public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
@@ -704,20 +708,52 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         helpStage.showAndWait();
     }
 
-    public void showResultsDialog(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Show Results");
-        alert.setHeaderText("Results from previous simulations ");
+    public void showResultsDialog() {
+        // Fetch all simulation results
+        List<SimulationResults> results = SimulationResultsDao.findAll();
 
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setPrefHeight(400);
-        dialogPane.setPrefWidth(600);
-        applyTheme(alert.getDialogPane().getScene(), isBlackTheme);
+        // Format the results into a readable format
+        StringBuilder statistics = new StringBuilder();
+        for (SimulationResults result : results) {
+            statistics.append("Simulation ID: ").append(result.getSimulationId()).append("\n");
+            statistics.append("Average Time: ").append(result.getAverageTime()).append("\n");
+            statistics.append("Total Patients: ").append(result.getTotalPatients()).append("\n");
+            statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n");
+            statistics.append("Lab Probability: ").append(result.getLabProbability()).append("\n");
+            statistics.append("X-ray Probability: ").append(result.getXrayProbability()).append("\n");
+            statistics.append("Treatment Probability: ").append(result.getTreatmentProbability()).append("\n");
+            statistics.append("Arrival Time: ").append(result.getArrivalTime()).append("\n");
+            statistics.append("Check-in Time: ").append(result.getCheckInTime()).append("\n");
+            statistics.append("Doctor Time: ").append(result.getDoctorTime()).append("\n");
+            statistics.append("Lab Time: ").append(result.getLabTime()).append("\n");
+            statistics.append("X-ray Time: ").append(result.getXrayTime()).append("\n");
+            statistics.append("Treatment Time: ").append(result.getTreatmentTime()).append("\n");
+            statistics.append("End Time: ").append(result.getEndTime()).append("\n");
+            statistics.append("------------------------------\n");
+        }
 
-        alert.setContentText("asd");
-        alert.showAndWait();
-        
+        // Create a TextArea to display the results
+        TextArea textArea = new TextArea(statistics.toString());
+        textArea.setWrapText(true);  // Enable text wrapping
+        textArea.setEditable(false);   // Make it read-only
+
+        // Wrap the TextArea in a ScrollPane
+        ScrollPane scrollPane = new ScrollPane(textArea);
+        scrollPane.setFitToWidth(true); // Allow the ScrollPane to fit to width
+        scrollPane.setFitToHeight(true); // Allow the ScrollPane to fit to height
+
+        // Create and configure the dialog
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Simulation Results");
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK); // Add an OK button
+        dialog.setResizable(true); // Make the dialog resizable
+
+        applyTheme(dialog.getDialogPane().getScene(), isBlackTheme);
+        // Show the dialog
+        dialog.showAndWait();
     }
+
 
     private void updateProbabilityValues() {
         double total = labProbabilitySlider.getValue() + xrayProbabilitySlider.getValue() + treatmentProbabilitySlider.getValue();

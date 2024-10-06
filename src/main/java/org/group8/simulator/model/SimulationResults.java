@@ -70,6 +70,59 @@ public class SimulationResults {
         this.endTime = endTime;
     }
 
-    public SimulationResults() { }
+    public SimulationResults() {}
+
+    // Getters
+    public long getSimulationId() { return simulationId; }
+
+    public double getAverageTime() { return averageTime; }
+
+    public int getTotalPatients() {
+        return totalPatients;
+    }
+
+    public int getCompletedVisits() {
+        return completedVisits;
+    }
+
+    public double getLabProbability() {
+        return labProbability;
+    }
+
+    public double getXrayProbability() {
+        return xrayProbability;
+    }
+
+    public double getTreatmentProbability() {
+        return treatmentProbability;
+    }
+
+    public double getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public double getCheckInTime() {
+        return checkInTime;
+    }
+
+    public double getDoctorTime() {
+        return doctorTime;
+    }
+
+    public double getLabTime() {
+        return labTime;
+    }
+
+    public double getXrayTime() {
+        return xrayTime;
+    }
+
+    public double getTreatmentTime() {
+        return treatmentTime;
+    }
+
+    public double getEndTime() {
+        return endTime;
+    }
 
 }
