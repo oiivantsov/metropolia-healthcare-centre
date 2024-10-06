@@ -92,6 +92,11 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         Menu fileMenu = new Menu("File");
         Menu editMenu = new Menu("Config");
         Menu helpMenu = new Menu("Help");
+        Menu resultsMenu = new Menu("Results");
+
+        MenuItem resultsItem = new MenuItem("Results");
+        resultsItem.setOnAction(e -> showResultsDialog());
+        resultsMenu.getItems().add(resultsItem);
 
         // "How to use" menu item
         MenuItem helpItem = new MenuItem("How to use");
@@ -122,7 +127,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         fileMenu.getItems().add(exitMenuItem);
 
         // Add menus to menu bar
-        menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
+        menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu, resultsMenu);
         return menuBar;
     }
 
@@ -543,6 +548,21 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
         alert.setContentText(helpText);
         alert.showAndWait();
+    }
+
+    public void showResultsDialog(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Show Results");
+        alert.setHeaderText("Results from previous simulations ");
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setPrefHeight(400);
+        dialogPane.setPrefWidth(600);
+        applyTheme(alert.getDialogPane().getScene(), isBlackTheme);
+
+        alert.setContentText("asd");
+        alert.showAndWait();
+        
     }
 
     private void updateProbabilityValues() {
