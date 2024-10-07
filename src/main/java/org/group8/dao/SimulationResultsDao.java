@@ -37,7 +37,7 @@ public class SimulationResultsDao {
         em.getTransaction().commit();
     }
 
-    public static List<SimulationResults> findAll() {
+    public List<SimulationResults> findAll() {
         EntityManager em = MariaDbJpaConnection.getInstance();
 
         // Create a CriteriaBuilder from the EntityManager
