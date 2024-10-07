@@ -20,4 +20,5 @@ public interface IControllerForP {
     void removePatientFromTreatmentCanvas();
 
     void onSimulationEnd();
+    void updateProgressBar();
 }

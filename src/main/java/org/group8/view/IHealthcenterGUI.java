@@ -16,4 +16,5 @@ public interface IHealthcenterGUI {
     IVisualization getXrayCanvas();
     IVisualization getTreatmentCanvas();
 
+    void updateProgressBar(double currentTime, double endTime);
 }

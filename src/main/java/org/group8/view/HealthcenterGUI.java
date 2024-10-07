@@ -64,6 +64,10 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     private Label xrayProbabilityValue;
     private Label treatmentProbabilityValue;
 
+    // Progress bar
+    private ProgressBar progressBar;
+    private Label progressLabel;
+
     // styles
     private static final String BLACK_THEME_CSS = "/black-theme.css";
     private static final String WHITE_THEME_CSS = "/white-theme.css";
@@ -82,8 +86,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         MenuBar menuBar = setupMenuBar();
         VBox controlPanel = setupControlPanel();
         HBox servicePointsBox = setupServicePoints();
-        VBox mainLayout = new VBox(menuBar, controlPanel, servicePointsBox);
-        Scene scene = new Scene(mainLayout, 1400, 800);
+        HBox progressBarBox = setupProgressBarBox();
+        VBox mainLayout = new VBox(menuBar, controlPanel, servicePointsBox, progressBarBox);
+        Scene scene = new Scene(mainLayout, 1400, 850);
         applyTheme(scene, isBlackTheme);
 
         primaryStage.setScene(scene);
@@ -434,7 +439,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
         HBox gridBox = new HBox();
         gridBox.setSpacing(150);
-        gridBox.setPadding(new Insets(20, 10, 30, 10));
+        gridBox.setPadding(new Insets(20, 10, 20, 10));
         gridBox.setAlignment(Pos.CENTER);
         gridBox.getChildren().addAll(gridPane);
 
@@ -719,19 +724,19 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         StringBuilder statistics = new StringBuilder();
         for (SimulationResults result : results) {
             statistics.append("Simulation ID: ").append(result.getSimulationId()).append("\n");
-            statistics.append("Average Time: ").append(result.getAverageTime()).append("\n");
+            statistics.append("Average Time: ").append(String.format("%.2f", result.getAverageTime())).append("\n");
             statistics.append("Total Patients: ").append(result.getTotalPatients()).append("\n");
             statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n");
-            statistics.append("Lab Probability: ").append(result.getLabProbability()).append("\n");
-            statistics.append("X-ray Probability: ").append(result.getXrayProbability()).append("\n");
-            statistics.append("Treatment Probability: ").append(result.getTreatmentProbability()).append("\n");
+            statistics.append("Lab Probability: ").append(String.format("%.2f", result.getLabProbability())).append("\n");
+            statistics.append("X-ray Probability: ").append(String.format("%.2f", result.getXrayProbability())).append("\n");
+            statistics.append("Treatment Probability: ").append(String.format("%.2f", result.getTreatmentProbability())).append("\n");
             statistics.append("Arrival Time: ").append(result.getArrivalTime()).append("\n");
             statistics.append("Check-in Time: ").append(result.getCheckInTime()).append("\n");
             statistics.append("Doctor Time: ").append(result.getDoctorTime()).append("\n");
             statistics.append("Lab Time: ").append(result.getLabTime()).append("\n");
             statistics.append("X-ray Time: ").append(result.getXrayTime()).append("\n");
             statistics.append("Treatment Time: ").append(result.getTreatmentTime()).append("\n");
-            statistics.append("End Time: ").append(result.getEndTime()).append("\n");
+            statistics.append("End Time: ").append(String.format("%.2f", result.getEndTime())).append("\n");
             statistics.append("------------------------------\n");
         }
 
@@ -804,6 +809,35 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         applyTheme(dialogPane.getScene(), isBlackTheme);
 
         alert.showAndWait();
+    }
+
+    public HBox setupProgressBarBox() {
+        HBox progressBarBox = new HBox();
+        progressBarBox.setPadding(new Insets(40));
+        progressBarBox.setSpacing(10);
+        progressBarBox.setAlignment(Pos.CENTER);
+
+        // ProgressBar setup
+        progressBar = new ProgressBar(0);
+        progressBar.setPrefWidth(500);
+
+        // Progress label setup
+        progressLabel = new Label("0%");
+
+        // Add the progress bar and label to the HBox
+        progressBarBox.getChildren().addAll(progressBar, progressLabel);
+
+        return progressBarBox;
+    }
+
+    @Override
+    public void updateProgressBar(double currentTime, double endTime) {
+        double progress = currentTime / endTime;
+        progressBar.setProgress(progress);
+
+        // Calculate percentage and update the label
+        int percentage = (int) (progress * 100);
+        Platform.runLater(() -> progressLabel.setText(percentage + "%"));
     }
 
 }

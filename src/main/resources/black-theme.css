@@ -41,10 +41,16 @@
     -fx-text-fill: #ffffff;  /* White text color */
 }
 
-/* Bold styling for service point labels */
-.service-point-label {
+/* Progress bar*/
+.progress-bar {
+    -fx-background-color: #3a3a3a;  /* Dark gray background for progress bar */
+    -fx-accent: #4caf50;  /* Green accent color for progress bar */
 }
 
+/* Bold styling for service point labels */
+.service-point-label {
+    -fx-font-weight: bold;
+}
 
 /* Text field styling */
 .text-field {

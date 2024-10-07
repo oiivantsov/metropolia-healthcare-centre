@@ -133,3 +133,9 @@
 .scroll-bar .thumb {
     -fx-background-color: #b0b0b0;  /* Darker thumb for contrast */
 }
+
+/* Progress Bar*/
+.progress-bar {
+    -fx-background-color: #f0f0f0;  /* Light background for progress bar */
+    -fx-accent: #4caf50;  /* Green accent color for progress */
+}
