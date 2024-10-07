@@ -137,4 +137,11 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
         });
     }
 
+    @Override
+    public void updateProgressBar() {
+        double currentTime = Clock.getInstance().getTime();
+        double totalTime = centre.getSimulationTime();
+        Platform.runLater(() -> gui.updateProgressBar(currentTime, totalTime));
+    }
+
 }

@@ -29,6 +29,11 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
     }
 
     @Override
+    public double getSimulationTime() {
+        return simulationTime;
+    }
+
+    @Override
     public void setDelay(long time) {
         delay = time;
     }
@@ -61,6 +66,7 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
             }
 
             delay();
+            controller.updateProgressBar();
 
             Trace.out(Trace.Level.INFO, "\nPhase A, time: " + currentTime());
             clock.setTime(currentTime());
@@ -73,6 +79,7 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
 
         }
 
+        controller.updateProgressBar();
         controller.onSimulationEnd();
         statistics();
 
