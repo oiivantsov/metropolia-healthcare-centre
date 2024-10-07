@@ -16,5 +16,6 @@ public interface IDataControlller {
     void updateDistribution(String event, String distribution, double averageTime);
     void setDefaultDistributions();
 
+    void persistSimulationResults(SimulationResults simulationResults);
     List<SimulationResults> getSimulationResults();
 }

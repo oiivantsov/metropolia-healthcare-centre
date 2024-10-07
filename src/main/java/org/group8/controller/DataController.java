@@ -11,6 +11,7 @@ public class DataController implements IDataControlller {
 
     private final ProbabilityDao probabilityDao = new ProbabilityDao();
     private final DistributionDao distributionDao = new DistributionDao();
+    private final SimulationResultsDao simulationResultsDao = new SimulationResultsDao();
 
     @Override
     public void setProbabilities(double lab, double xray, double treatment) {
@@ -57,5 +58,10 @@ public class DataController implements IDataControlller {
     @Override
     public List<SimulationResults> getSimulationResults() {
         return SimulationResultsDao.findAll();
+    }
+
+    @Override
+    public void persistSimulationResults(SimulationResults simulationResults) {
+        simulationResultsDao.persist(simulationResults);
     }
 }
