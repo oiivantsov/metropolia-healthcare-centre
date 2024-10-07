@@ -22,6 +22,7 @@ import org.group8.simulator.framework.Trace;
 import org.group8.simulator.model.SimulationResults;
 
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
@@ -73,6 +74,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     private static final String WHITE_THEME_CSS = "/white-theme.css";
     private boolean isBlackTheme = true;
 
+    // Preferences key to store whether the help dialog has been shown
+    private static final String HELP_SHOWN_KEY = "helpShown";
+
     @Override
     public void init() {
         Trace.setTraceLevel(Trace.Level.INFO);
@@ -94,6 +98,9 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         primaryStage.setScene(scene);
         primaryStage.show();
         Platform.runLater(mainLayout::requestFocus);
+
+        // Check if it's the first time the user is opening the application
+        showHelpDialogIfFirstTime();
     }
 
     private void setupPrimaryStage(Stage primaryStage) {
@@ -618,8 +625,8 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         alert.setHeaderText("Simulation Statistics");
 
         String formattedStatistics = """
-        %s
-        """.formatted(statistics);
+                %s
+                """.formatted(statistics);
 
         // Set a custom width for the Alert
         DialogPane dialogPane = alert.getDialogPane();
@@ -644,60 +651,75 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
         // Help Text
         String helpText = """
-        Welcome to the Health Center Simulation!
+                Welcome to the Health Center Simulation!
 
-        This simulation models the workflow of a health center with five service points:
-        - **Check-In**: Patients check in before proceeding to see the doctor.
-        - **Doctor**: Patients consult with a doctor to determine the next steps.
-        - **Lab**: Patients may be sent to the lab for additional tests.
-        - **X-Ray**: Patients may require an X-ray examination.
-        - **Treatment**: Patients receive any necessary treatment.
+                This simulation models the workflow of a health center with five service points:
+                - **Check-In**: Patients check in before proceeding to see the doctor.
+                - **Doctor**: Patients consult with a doctor to determine the next steps.
+                - **Lab**: Patients may be sent to the lab for additional tests.
+                - **X-Ray**: Patients may require an X-ray examination.
+                - **Treatment**: Patients receive any necessary treatment.
 
-        ### Controls Overview:
+                ### Controls Overview:
 
-        1. **Set Time**: 
-           - Enter the total simulation time in the 'Set Time' field.
-           - Click 'Update Time' to apply changes, even if the simulation is already running.
+                1. **Set Time**:
+                   - Enter the total simulation time in the 'Set Time' field.
+                   - Click 'Update Time' to apply changes, even if the simulation is already running.
 
-        2. **Set Delay**:
-           - Enter the delay between patient actions in the 'Set Delay' field.
-           - Click 'Update Delay' to adjust the delay while the simulation is in progress.
+                2. **Set Delay**:
+                   - Enter the delay between patient actions in milliseconds in the 'Set Delay' field.
+                   - Click 'Update Delay' to adjust the delay while the simulation is in progress.
 
-        3. **Speed Up / Speed Down**:
-           - Use these buttons to increase or decrease the speed of the simulation in real-time.
+                3. **Speed Up / Speed Down**:
+                   - Use these buttons to increase or decrease the speed of the simulation in real-time.
 
-        4. **Run**:
-           - Start or restart the simulation by clicking 'Run' after setting the time and delay.
+                4. **Run**:
+                   - Start or restart the simulation by clicking 'Start / Restart' after setting the time and delay.
 
-        5. **Stop / Resume**:
-           - Pause the simulation by clicking 'Stop'.
-           - Resume the simulation by clicking 'Resume'.
+                5. **Stop / Resume**:
+                   - Pause the simulation by clicking 'Stop / Resume'.
+                   - Resume the simulation by clicking the same button.
 
-        6. **Statistics**:
-           - View current simulation statistics by clicking the 'Statistics' button.
+                6. **Statistics**:
+                   - View the current simulation statistics by clicking the 'Statistics' button.
 
-        ### Configuration Options:
+                ### Menu Options:
 
-        - **Edit Distributions**: 
-          - Adjust the distribution and corresponding processing time for each service point (e.g., Check-In, Doctor, Lab, etc.) via the 'Edit Distributions' option in the 'Config' menu. All values must be positive.
+                - **File Menu**:
+                  - **Black / White Theme**: Switch between the dark and light themes.
+                  - **Exit**: Close the application.
 
-        - **Edit Probabilities**: 
-          - Modify the probabilities for routing patients after visiting the doctor (e.g., to Lab, X-Ray, or Treatment) through the 'Edit Probabilities' option in the 'Config' menu. Ensure the total sum of all probabilities does not exceed 1.
+                - **Config Menu**:
+                  - **Edit Distributions**: Adjust the distribution type and average processing times for each service point (e.g., Check-In, Doctor, Lab, etc.). You can set the distribution to either "negexp" or "poisson", and specify the average time.
+                  - **Edit Probabilities**: Modify the probabilities for routing patients to Lab, X-Ray, or Treatment after a doctor's consultation. Make sure the total sum of probabilities does not exceed 1.
 
-        ### Additional Features:
+                - **Help Menu**:
+                  - **How to Use**: View this help dialog.
 
-        - **Patient Flow Visualization**:
-          - The on-screen visualization shows patient progress as they move through different service points in the health center. This provides a real-time visual representation of the health center's workflow.
+                - **Results Menu**:
+                  - **Results**: View previous simulation results, including average times, total patients, and probabilities used.
 
-        For more detailed information or support, please refer to the user documentation or contact support.
-        """;
+                ### Additional Features:
+
+                - **Patient Flow Visualization**:
+                  - The visualization panel displays patient movement through each of the five service points in the health center. Each service point is represented by a box that visually shows the number of patients present.
+                    
+                - **Set Default**:
+                  - When editing distributions, use the 'Set Default' button to reset all distributions and average times to their default values.
+
+                - **Progress and Status**:
+                  - A status label at the top displays whether the simulation is running, paused, or ended.
+                  - The progress bar fills as the simulation progresses, providing a visual cue of how much time remains.
+
+                For more detailed information or support, please refer to the user documentation or contact support.
+                """;
 
         // TextArea to display the help text
         TextArea helpTextArea = new TextArea(helpText);
         helpTextArea.setWrapText(true);
         helpTextArea.setEditable(false);
         helpTextArea.setPrefWidth(600);
-        helpTextArea.setPrefHeight(400);
+        helpTextArea.setPrefHeight(500);
 
         // Close button
         Button closeButton = new Button("Close");
@@ -708,7 +730,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER);
 
-        Scene helpScene = new Scene(layout, 650, 500);
+        Scene helpScene = new Scene(layout, 650, 600);
         applyTheme(helpScene, isBlackTheme); // Apply the theme
 
         helpStage.setScene(helpScene);
@@ -838,6 +860,22 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         // Calculate percentage and update the label
         int percentage = (int) (progress * 100);
         Platform.runLater(() -> progressLabel.setText(percentage + "%"));
+    }
+
+    private void showHelpDialogIfFirstTime() {
+        // Access the user's preferences for this application
+        Preferences prefs = Preferences.userNodeForPackage(HealthcenterGUI.class);
+
+        // Check if the help has been shown before
+        boolean helpShown = prefs.getBoolean(HELP_SHOWN_KEY, false);
+
+        if (!helpShown) {
+            // Show the help dialog
+            showHelpDialog();
+
+            // Set the preference to indicate that the help dialog has been shown
+            prefs.putBoolean(HELP_SHOWN_KEY, true);
+        }
     }
 
 }
