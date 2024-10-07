@@ -1,9 +1,6 @@
 package org.group8.controller;
 
 import javafx.application.Platform;
-import org.group8.dao.DistributionDao;
-import org.group8.dao.ProbabilityDao;
-import org.group8.dao.SimulationResultsDao;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.IHealthCentre;
 import org.group8.simulator.model.*;
@@ -13,8 +10,6 @@ public class HealthcenterController implements IControllerForP, IControllerForV 
 
     private IHealthcenterGUI gui;
     private IHealthCentre centre;
-    private final ProbabilityDao probabilityDao = new ProbabilityDao();
-    private final DistributionDao distributionDao = new DistributionDao();
 
     public HealthcenterController(IHealthcenterGUI gui) {
         this.gui = gui;
