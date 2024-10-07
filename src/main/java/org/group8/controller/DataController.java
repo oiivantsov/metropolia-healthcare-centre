@@ -57,7 +57,7 @@ public class DataController implements IDataControlller {
 
     @Override
     public List<SimulationResults> getSimulationResults() {
-        return SimulationResultsDao.findAll();
+        return simulationResultsDao.findAll();
     }
 
     @Override
