@@ -20,9 +20,4 @@ public interface IControllerForP {
     void removePatientFromTreatmentCanvas();
 
     void onSimulationEnd();
-    double getProbability(String decisionType);
-    double getAverageTime(String event);
-    String getDistribution(String event);
-    Distribution getDistributionObject(String event);
-
 }
