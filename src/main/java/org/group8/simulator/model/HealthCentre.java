@@ -1,6 +1,8 @@
 package org.group8.simulator.model;
 
+import org.group8.controller.DataController;
 import org.group8.controller.IControllerForP;
+import org.group8.controller.IDataControlller;
 import org.group8.dao.ProbabilityDao;
 import org.group8.dao.SimulationResultsDao;
 import org.group8.distributions.Negexp;
@@ -18,6 +20,7 @@ public class HealthCentre extends AbstractHealthCentre {
     private ArrivalProcess checkInProcess;
     private ServicePoint checkIn, doctor, lab, xRay, treatment;
     private Random decisionMaker = new Random();
+    private IDataControlller dataControlller = new DataController();
 
     public HealthCentre(IControllerForP controller) {
         super(controller);
@@ -34,7 +37,7 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     public ArrivalProcess createArrivalProcess(String name, EventType eventType) {
-        Distribution distribution = controller.getDistributionObject(name);
+        Distribution distribution = dataControlller.getDistributionObject(name);
         return switch (distribution.getDistribution()) {
             case "negexp" -> new ArrivalProcess(new Negexp(distribution.getAverageTime()), eventList, eventType);
             case "poisson" -> new ArrivalProcess(new Poisson(distribution.getAverageTime()), eventList, eventType);
@@ -43,7 +46,7 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     public ServicePoint createServicePoint(String name, EventType eventType) {
-        Distribution distribution = controller.getDistributionObject(name);
+        Distribution distribution = dataControlller.getDistributionObject(name);
         return switch (distribution.getDistribution()) {
             case "negexp" -> new ServicePoint(new Negexp(distribution.getAverageTime()), eventList, eventType);
             case "poisson" -> new ServicePoint(new Poisson(distribution.getAverageTime()), eventList, eventType);
@@ -80,10 +83,10 @@ public class HealthCentre extends AbstractHealthCentre {
                 p = doctor.removeFromQueue();
                 // decision-making process (random based on enum probabilities)
                 nextStep = decisionMaker.nextDouble();
-                if (nextStep < controller.getProbability("LAB")) {
+                if (nextStep < dataControlller.getProbability("LAB")) {
                     lab.addToQueue(p);  // Lab
                     controller.addPatientToLabCanvas();
-                } else if (nextStep < controller.getProbability("LAB") + controller.getProbability("XRAY")) {
+                } else if (nextStep < dataControlller.getProbability("LAB") + dataControlller.getProbability("XRAY")) {
                     xRay.addToQueue(p);  // X-ray
                     controller.addPatientToXRayCanvas();
                 } else {
@@ -177,17 +180,17 @@ public class HealthCentre extends AbstractHealthCentre {
             double endTime = Clock.getInstance().getTime();
 
             // Probabilities
-            double labProbability = controller.getProbability("LAB");
-            double xrayProbability = controller.getProbability("XRAY");
+            double labProbability = dataControlller.getProbability("LAB");
+            double xrayProbability = dataControlller.getProbability("XRAY");
             double treatmentProbability = 1.0 - (labProbability + xrayProbability);
 
             // Time-related values
-            double arrivalTime = controller.getAverageTime("arrival");
-            double checkInTime = controller.getAverageTime("check-in");
-            double doctorTime = controller.getAverageTime("doctor");
-            double labTime = controller.getAverageTime("lab");
-            double xrayTime = controller.getAverageTime("xray");
-            double treatmentTime = controller.getAverageTime("treatment");
+            double arrivalTime = dataControlller.getAverageTime("arrival");
+            double checkInTime = dataControlller.getAverageTime("check-in");
+            double doctorTime = dataControlller.getAverageTime("doctor");
+            double labTime = dataControlller.getAverageTime("lab");
+            double xrayTime = dataControlller.getAverageTime("xray");
+            double treatmentTime = dataControlller.getAverageTime("treatment");
 
             // Create SimulationResults object using the simplified constructor
             SimulationResults simulationResults = new SimulationResults(

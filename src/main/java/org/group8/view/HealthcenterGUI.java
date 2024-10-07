@@ -13,11 +13,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
+import org.group8.controller.DataController;
 import org.group8.controller.HealthcenterController;
 import org.group8.controller.IControllerForV;
-import org.group8.dao.SimulationResultsDao;
+import org.group8.controller.IDataControlller;
 import org.group8.simulator.framework.Trace;
-import javafx.stage.Modality;
 import org.group8.simulator.model.SimulationResults;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     private static final int CANVAS_HEIGHT = 450;
 
     private IControllerForV controller;
+    private IDataControlller dataController;
 
     // time and delay fields
     private TextField setTimeField;
@@ -71,6 +73,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     public void init() {
         Trace.setTraceLevel(Trace.Level.INFO);
         controller = new HealthcenterController(this);
+        dataController = new DataController();
     }
 
     @Override
@@ -153,19 +156,19 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         grid.setVgap(10);
 
         // Current average times and distributions in DB
-        double arrivalTime = controller.getAverageTime("arrival");
-        double checkInTime = controller.getAverageTime("check-in");
-        double doctorTime = controller.getAverageTime("doctor");
-        double labTime = controller.getAverageTime("lab");
-        double xRayTime = controller.getAverageTime("xray");
-        double treatmentTime = controller.getAverageTime("treatment");
+        double arrivalTime = dataController.getAverageTime("arrival");
+        double checkInTime = dataController.getAverageTime("check-in");
+        double doctorTime = dataController.getAverageTime("doctor");
+        double labTime = dataController.getAverageTime("lab");
+        double xRayTime = dataController.getAverageTime("xray");
+        double treatmentTime = dataController.getAverageTime("treatment");
 
-        String arrivalDistribution = controller.getDistribution("arrival");
-        String checkInDistribution = controller.getDistribution("check-in");
-        String doctorDistribution = controller.getDistribution("doctor");
-        String labDistribution = controller.getDistribution("lab");
-        String xRayDistribution = controller.getDistribution("xray");
-        String treatmentDistribution = controller.getDistribution("treatment");
+        String arrivalDistribution = dataController.getDistribution("arrival");
+        String checkInDistribution = dataController.getDistribution("check-in");
+        String doctorDistribution = dataController.getDistribution("doctor");
+        String labDistribution = dataController.getDistribution("lab");
+        String xRayDistribution = dataController.getDistribution("xray");
+        String treatmentDistribution = dataController.getDistribution("treatment");
 
         // Create an observable list of distribution options
         ObservableList<String> distributionOptions = FXCollections.observableArrayList("negexp", "poisson");
@@ -268,18 +271,18 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
             String distTreatment = treatmentComboBox.getValue();
             String distArrival = arrivalComboBox.getValue();
 
-            controller.updateDistribution("check-in", distCheckIn, avgCheckIn);
-            controller.updateDistribution("doctor", distDoctor, avgDoctor);
-            controller.updateDistribution("lab", distLab, avgLab);
-            controller.updateDistribution("xray", distXRay, avgXRay);
-            controller.updateDistribution("treatment", distTreatment, avgTreatment);
-            controller.updateDistribution("arrival", distArrival, avgArrival);
+            dataController.updateDistribution("check-in", distCheckIn, avgCheckIn);
+            dataController.updateDistribution("doctor", distDoctor, avgDoctor);
+            dataController.updateDistribution("lab", distLab, avgLab);
+            dataController.updateDistribution("xray", distXRay, avgXRay);
+            dataController.updateDistribution("treatment", distTreatment, avgTreatment);
+            dataController.updateDistribution("arrival", distArrival, avgArrival);
 
             dialog.close();
         });
 
         setDefaultButton.setOnAction(e -> {
-            controller.setDefaultDistributions();
+            dataController.setDefaultDistributions();
             refreshDistributionDialogFields(arrivalField, checkInField, doctorField, labField, xRayField, treatmentField,
                     arrivalComboBox, checkInComboBox, doctorComboBox, labComboBox, xRayComboBox, treatmentComboBox);
         });
@@ -299,19 +302,19 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
     private void refreshDistributionDialogFields(TextField arrivalField, TextField checkInField, TextField doctorField, TextField labField, TextField xRayField, TextField treatmentField,
                                                  ComboBox<String> arrivalComboBox, ComboBox<String> checkInComboBox, ComboBox<String> doctorComboBox, ComboBox<String> labComboBox, ComboBox<String> xRayComboBox, ComboBox<String> treatmentComboBox) {
-        arrivalField.setText(String.valueOf(controller.getAverageTime("arrival")));
-        checkInField.setText(String.valueOf(controller.getAverageTime("check-in")));
-        doctorField.setText(String.valueOf(controller.getAverageTime("doctor")));
-        labField.setText(String.valueOf(controller.getAverageTime("lab")));
-        xRayField.setText(String.valueOf(controller.getAverageTime("xray")));
-        treatmentField.setText(String.valueOf(controller.getAverageTime("treatment")));
+        arrivalField.setText(String.valueOf(dataController.getAverageTime("arrival")));
+        checkInField.setText(String.valueOf(dataController.getAverageTime("check-in")));
+        doctorField.setText(String.valueOf(dataController.getAverageTime("doctor")));
+        labField.setText(String.valueOf(dataController.getAverageTime("lab")));
+        xRayField.setText(String.valueOf(dataController.getAverageTime("xray")));
+        treatmentField.setText(String.valueOf(dataController.getAverageTime("treatment")));
 
-        arrivalComboBox.setValue(controller.getDistribution("arrival"));
-        checkInComboBox.setValue(controller.getDistribution("check-in"));
-        doctorComboBox.setValue(controller.getDistribution("doctor"));
-        labComboBox.setValue(controller.getDistribution("lab"));
-        xRayComboBox.setValue(controller.getDistribution("xray"));
-        treatmentComboBox.setValue(controller.getDistribution("treatment"));
+        arrivalComboBox.setValue(dataController.getDistribution("arrival"));
+        checkInComboBox.setValue(dataController.getDistribution("check-in"));
+        doctorComboBox.setValue(dataController.getDistribution("doctor"));
+        labComboBox.setValue(dataController.getDistribution("lab"));
+        xRayComboBox.setValue(dataController.getDistribution("xray"));
+        treatmentComboBox.setValue(dataController.getDistribution("treatment"));
     }
 
     private void validateAndEnableSaveButton(Button saveButton, TextField... fields) {
@@ -351,7 +354,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
                     double labProbability = labProbabilitySlider.getValue();
                     double xrayProbability = xrayProbabilitySlider.getValue();
                     double treatmentProbability = treatmentProbabilitySlider.getValue();
-                    controller.setProbabilities(labProbability, xrayProbability, treatmentProbability);
+                    dataController.setProbabilities(labProbability, xrayProbability, treatmentProbability);
                     dialog.close();
                 }
         );
@@ -445,7 +448,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     }
 
     private Slider createProbabilitySlider(String labelText, String decisionType) {
-        double probability = controller.getProbability(decisionType);
+        double probability = dataController.getProbability(decisionType);
         Slider slider = new Slider(0, 1, probability);
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
@@ -710,7 +713,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
     public void showResultsDialog() {
         // Fetch all simulation results
-        List<SimulationResults> results = SimulationResultsDao.findAll();
+        List<SimulationResults> results = dataController.getSimulationResults();
 
         // Format the results into a readable format
         StringBuilder statistics = new StringBuilder();
@@ -753,7 +756,6 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         // Show the dialog
         dialog.showAndWait();
     }
-
 
     private void updateProbabilityValues() {
         double total = labProbabilitySlider.getValue() + xrayProbabilitySlider.getValue() + treatmentProbabilitySlider.getValue();
