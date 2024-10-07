@@ -3,8 +3,6 @@ package org.group8.simulator.model;
 import org.group8.controller.DataController;
 import org.group8.controller.IControllerForP;
 import org.group8.controller.IDataControlller;
-import org.group8.dao.ProbabilityDao;
-import org.group8.dao.SimulationResultsDao;
 import org.group8.distributions.Negexp;
 import org.group8.distributions.Poisson;
 import org.group8.simulator.framework.AbstractHealthCentre;
@@ -12,7 +10,6 @@ import org.group8.simulator.framework.ArrivalProcess;
 import org.group8.simulator.framework.Clock;
 import org.group8.simulator.framework.Event;
 
-import java.util.List;
 import java.util.Random;
 
 public class HealthCentre extends AbstractHealthCentre {
@@ -138,14 +135,7 @@ public class HealthCentre extends AbstractHealthCentre {
         System.out.println("Total patients completed the visit: " + Patient.getCompletedPatients());
         System.out.println("Average time spent by all patients completed the visit: " + Patient.getTotalTime() / Patient.getCompletedPatients());
 
-        // Create the DAO instance
-        SimulationResultsDao simulationResultsDao = new SimulationResultsDao();
-
-        // Create the manager, passing the DAO
-        SimulationResultsManager simulationResultsManager = new SimulationResultsManager(simulationResultsDao);
-
-        // Assuming `controller` is your IControllerForP instance
-        simulationResultsManager.gatherAndSaveSimulationData(controller);
+        gatherAndSaveSimulationData();
     }
 
     public String getStatistics() {
@@ -164,46 +154,35 @@ public class HealthCentre extends AbstractHealthCentre {
         return statisticsBuilder.toString();
     }
 
-    public class SimulationResultsManager {
+    public void gatherAndSaveSimulationData() {
 
-        private SimulationResultsDao simulationResultsDao;
+        // Calculation for patient completion time
+        int completedPatients = Patient.getCompletedPatients();
+        double averageTime = (completedPatients > 0) ? Patient.getTotalTime() / (double) completedPatients : 0.0;
+        double endTime = Clock.getInstance().getTime();
 
-        public SimulationResultsManager(SimulationResultsDao simulationResultsDao) {
-            this.simulationResultsDao = simulationResultsDao;
-        }
+        // Probabilities
+        double labProbability = dataControlller.getProbability("LAB");
+        double xrayProbability = dataControlller.getProbability("XRAY");
+        double treatmentProbability = 1.0 - (labProbability + xrayProbability);
 
-        public void gatherAndSaveSimulationData(IControllerForP controller) {
+        // Time-related values
+        double arrivalTime = dataControlller.getAverageTime("arrival");
+        double checkInTime = dataControlller.getAverageTime("check-in");
+        double doctorTime = dataControlller.getAverageTime("doctor");
+        double labTime = dataControlller.getAverageTime("lab");
+        double xrayTime = dataControlller.getAverageTime("xray");
+        double treatmentTime = dataControlller.getAverageTime("treatment");
 
-            // Calculation for patient completion time
-            int completedPatients = Patient.getCompletedPatients();
-            double averageTime = (completedPatients > 0) ? Patient.getTotalTime() / (double) completedPatients : 0.0;
-            double endTime = Clock.getInstance().getTime();
+        // Create SimulationResults object using the simplified constructor
+        SimulationResults simulationResults = new SimulationResults(
+                averageTime, Patient.getTotalPatients(), completedPatients,
+                labProbability, xrayProbability, treatmentProbability,
+                arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime
+        );
 
-            // Probabilities
-            double labProbability = dataControlller.getProbability("LAB");
-            double xrayProbability = dataControlller.getProbability("XRAY");
-            double treatmentProbability = 1.0 - (labProbability + xrayProbability);
-
-            // Time-related values
-            double arrivalTime = dataControlller.getAverageTime("arrival");
-            double checkInTime = dataControlller.getAverageTime("check-in");
-            double doctorTime = dataControlller.getAverageTime("doctor");
-            double labTime = dataControlller.getAverageTime("lab");
-            double xrayTime = dataControlller.getAverageTime("xray");
-            double treatmentTime = dataControlller.getAverageTime("treatment");
-
-            // Create SimulationResults object using the simplified constructor
-            SimulationResults simulationResults = new SimulationResults(
-                    averageTime, Patient.getTotalPatients(), completedPatients,
-                    labProbability, xrayProbability, treatmentProbability,
-                    arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime
-            );
-
-            // Persist the new results
-            simulationResultsDao.persist(simulationResults);
-        }
+        // Persist the new results
+        dataControlller.persistSimulationResults(simulationResults);
     }
-
-
 
 }
