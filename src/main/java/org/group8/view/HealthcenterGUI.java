@@ -1205,7 +1205,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
             statistics.append("Simulation ID: ").append(result.getSimulationId()).append("\n");
             statistics.append("Average Time: ").append(String.format("%.2f", result.getAverageTime())).append("\n");
             statistics.append("Total Patients: ").append(result.getTotalPatients()).append("\n");
-            statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n\n");
+            statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n");
             statistics.append("End Time: ").append(String.format("%.2f", result.getEndTime())).append("\n");
             statistics.append("--Distiributions\n\n");
             statistics.append("Arrival Time: ").append(result.getArrivalTime()).append("\n");
