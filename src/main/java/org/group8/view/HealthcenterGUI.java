@@ -1206,14 +1206,14 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
             statistics.append("Average Time: ").append(String.format("%.2f", result.getAverageTime())).append("\n");
             statistics.append("Total Patients: ").append(result.getTotalPatients()).append("\n");
             statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n\n");
+            statistics.append("End Time: ").append(String.format("%.2f", result.getEndTime())).append("\n");
             statistics.append("--Distiributions\n\n");
             statistics.append("Arrival Time: ").append(result.getArrivalTime()).append("\n");
             statistics.append("Check-in Time: ").append(result.getCheckInTime()).append("\n");
             statistics.append("Doctor Time: ").append(result.getDoctorTime()).append("\n");
             statistics.append("Lab Time: ").append(result.getLabTime()).append("\n");
             statistics.append("X-ray Time: ").append(result.getXrayTime()).append("\n");
-            statistics.append("Treatment Time: ").append(result.getTreatmentTime()).append("\n");
-            statistics.append("End Time: ").append(String.format("%.2f", result.getEndTime())).append("\n\n");
+            statistics.append("Treatment Time: ").append(result.getTreatmentTime()).append("\n\n");
             statistics.append("--Probabilitys\n\n");
             statistics.append("Lab Probability: ").append(String.format("%.2f", result.getLabProbability())).append("\n");
             statistics.append("X-ray Probability: ").append(String.format("%.2f", result.getXrayProbability())).append("\n");
