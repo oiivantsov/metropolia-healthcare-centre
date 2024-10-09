@@ -5,6 +5,9 @@ import org.group8.simulator.model.SimulationResults;
 
 import java.util.List;
 
+/**
+ * Interface for controlling data operations related to probabilities, distributions and simulation results.
+ */
 public interface IDataControlller {
     double getProbability(String decisionType);
     void setProbabilities(double lab, double xray, double treatment);
