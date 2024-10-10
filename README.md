@@ -30,15 +30,13 @@ src/
 └── Main.java             # Entry point for the JavaFX application
 ```
 
-# Installation and Setup
+## Installation and Setup
 
-## Prerequisites
+### Prerequisites
 - Java 11 or higher
 - MariaDB (or compatible database server)
 - JDBC Driver for MariaDB
 - JavaFX SDK (required for GUI)
-
-## Setting up the Database
 
 ### Create the MariaDB Database
 Run the following command to create a new database:
@@ -47,7 +45,7 @@ Run the following command to create a new database:
 CREATE DATABASE healthcare_simulation;
 ```
 
-## Configure Database Connection
+### Configure Database Connection
 Update the `.env` file with your database credentials:
 
 ```bash
@@ -56,7 +54,7 @@ JDBC_USER=your_username
 JDBC_PASSWORD=your_password
 ```
 
-## Set Up Database Schema
+### Set Up Database Schema
 For the first run, ensure that your `persistence.xml` file is set to automatically drop and create the database schema. This can be found in `src/main/resources/META-INF/persistence.xml`:
 
 ```xml
@@ -85,7 +83,7 @@ java --module-path /path/to/javafx-sdk-20/lib --add-modules javafx.controls,java
 
 Make sure you replace `/path/to/javafx-sdk-20/lib` with the actual path to your JavaFX SDK.
 
-# Main Components
+## Main Components
 
 ### Controller Layer
 - **HealthcenterController.java**: Manages the simulation flow and interaction between the user interface (GUI) and the simulation engine.
@@ -106,7 +104,7 @@ Make sure you replace `/path/to/javafx-sdk-20/lib` with the actual path to your 
 - **SimulationResultsDao.java**: Manages the persistence of simulation results to the database.
 - **MariaDbJpaConnection.java**: Provides a singleton connection to the MariaDB database using JPA.
 
-# How to Use
+## How to Use
 
 ### Main GUI Features
 - **Run/Stop Simulation**: Start or stop the patient flow simulation.
@@ -121,7 +119,7 @@ Make sure you replace `/path/to/javafx-sdk-20/lib` with the actual path to your 
 - **Distributions**: The system stores distributions and average times for each service point in the database, allowing customization.
 - **Simulation Results**: Each simulation run’s results are saved to the database for future reference and statistical analysis.
 
-# Example Output
+## Example Output
 
 After running a simulation, you will see visual representations of patients moving through various service points in the health center. Key statistics will also be shown:
 
@@ -139,6 +137,6 @@ The full API documentation for the Health Center Simulator is available in the `
 
 [View API Documentation](./docs/index.html)
 
-#License
+## License
 
 This project is open-source. Feel free to modify and enhance it as per your needs.
