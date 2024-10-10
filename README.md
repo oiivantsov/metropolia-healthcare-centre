@@ -48,7 +48,7 @@ CREATE DATABASE healthcare_simulation;
 ```
 
 ## Configure Database Connection
-Update the .env file with your database credentials::
+Update the `.env` file with your database credentials:
 
 ```bash
 JDBC_URL=jdbc:mariadb://localhost:3306/healthcare_simulation
