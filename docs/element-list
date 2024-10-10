@@ -1,0 +1,8 @@
+org.group8
+org.group8.controller
+org.group8.dao
+org.group8.datasource
+org.group8.distributions
+org.group8.simulator.framework
+org.group8.simulator.model
+org.group8.view
