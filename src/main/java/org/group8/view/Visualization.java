@@ -5,6 +5,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+/**
+ * The Visualization class provides the graphical representation of patients in the simulation
+ * using a canvas. It handles displaying new patients, removing them, and resetting the display.
+ */
 public class Visualization extends Canvas implements IVisualization {
 
     private final GraphicsContext gc;
@@ -25,12 +29,23 @@ public class Visualization extends Canvas implements IVisualization {
     private final Image doctorImage = new Image(getClass().getResourceAsStream("/images/doctor.png"));
     private final Image defaultImage = new Image(getClass().getResourceAsStream("/images/happy.png"));
 
+    /**
+     * Constructs a new Visualization with specified width and height.
+     * Initializes the canvas and clears the display.
+     *
+     * @param w the width of the canvas
+     * @param h the height of the canvas
+     */
     public Visualization(int w, int h) {
         super(w, h);
         gc = this.getGraphicsContext2D();
         clearDisplay();
     }
 
+    /**
+     * Clears the display by filling the background with a light blue color and
+     * resetting the patient position coordinates.
+     */
     public void clearDisplay() {
         // Set the background color
         gc.setFill(Color.LIGHTBLUE);
@@ -41,6 +56,15 @@ public class Visualization extends Canvas implements IVisualization {
         j = vPadding;
     }
 
+    /**
+     * Displays a new patient on the canvas at the current position based on the provided state.
+     * Moves the drawing position for the next patient.
+     * If the canvas bounds are reached, the display is cleared and reset.
+     * The patient state determines the image to be drawn.
+     * The default image is drawn if the state is not recognized.
+     *
+     * @param state the state of the patient (e.g., "treatment", "sick", "xray", etc.)
+     */
     public void newPatient(String state) {
         // Set the fill color (black or another color to ensure visibility)
         gc.setFill(Color.LIGHTBLUE);
@@ -80,6 +104,10 @@ public class Visualization extends Canvas implements IVisualization {
         }
     }
 
+    /**
+     * Removes the last drawn patient from the canvas. Adjusts the position to reflect
+     * the removal and ensures the canvas background is redrawn.
+     */
     public void removePatient() {
 
         // Check if we need to move to the previous row

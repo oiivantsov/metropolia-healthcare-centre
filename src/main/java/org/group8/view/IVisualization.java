@@ -1,5 +1,9 @@
 package org.group8.view;
 
+/**
+ * The IVisualization interface defines methods for visualizing patient flow in the simulation.
+ * It provides methods for clearing the display, adding new patients, and removing patients.
+ */
 public interface IVisualization {
 
     void clearDisplay();  // Method to clear the display
