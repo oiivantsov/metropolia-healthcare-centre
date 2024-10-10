@@ -2,6 +2,12 @@ package org.group8.simulator.framework;
 
 import org.group8.controller.IControllerForP;
 
+/**
+ * Abstract class representing the core logic of a healthcare simulation.
+ * This class provides the base structure for handling simulation events,
+ * controlling the simulation thread, and managing the simulation clock.
+ * It extends {@link Thread} to allow the simulation to run in a separate thread.
+ */
 public abstract class AbstractHealthCentre extends Thread implements IHealthCentre {
 
     private double simulationTime = 0;
@@ -17,6 +23,12 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
 
     protected IControllerForP controller;
 
+    /**
+     * Constructs an AbstractHealthCentre with a controller responsible
+     * for managing simulation events and the graphical interface.
+     *
+     * @param controller the controller for managing simulation events and UI
+     */
     public AbstractHealthCentre(IControllerForP controller) {
         this.controller = controller;
         clock = Clock.getInstance();
@@ -43,11 +55,15 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
         return delay;
     }
 
+    /**
+     * Main loop for running the simulation. This method initializes the simulation,
+     * processes events, and manages pauses and delays.
+     */
     public void run() {
-        init(); // create first event
+        init(); // Initialize and create the first event
         while (simulate()) {
 
-            // check if thread is interrupted
+            // Check if thread is interrupted
             if (Thread.currentThread().isInterrupted()) {
                 Trace.out(Trace.Level.INFO, "Simulation interrupted. Stopping...");
                 return;
@@ -76,37 +92,69 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
 
             Trace.out(Trace.Level.INFO, "\nPhase C:");
             tryEventC();
-
         }
 
         controller.updateProgressBar();
         controller.onSimulationEnd();
         statistics();
-
     }
 
+    /**
+     * Processes events scheduled for the current simulation time.
+     */
     private void processEventB() {
         while (eventList.getNextTime() == clock.getTime()) {
             processEvent(eventList.remove());
         }
     }
 
+    /**
+     * Abstract method to be implemented by subclasses to define
+     * how an event should be processed.
+     *
+     * @param e the event to process
+     */
     protected abstract void processEvent(Event e);
 
+    /**
+     * Abstract method to be implemented by subclasses to define
+     * the logic for attempting to process events in phase C of the simulation.
+     */
     protected abstract void tryEventC();
 
+    /**
+     * Retrieves the current time from the event list.
+     *
+     * @return the current simulation time
+     */
     private double currentTime() {
         return eventList.getNextTime();
     }
 
+    /**
+     * Determines if the simulation should continue based on the current
+     * simulation time and the total simulation duration.
+     *
+     * @return {@code true} if the simulation should continue, {@code false} otherwise
+     */
     private boolean simulate() {
         return clock.getTime() < simulationTime;
     }
 
+    /**
+     * Abstract method to be implemented by subclasses to initialize the simulation.
+     */
     protected abstract void init();
 
+    /**
+     * Abstract method to be implemented by subclasses to gather and print
+     * simulation statistics at the end of the simulation.
+     */
     protected abstract void statistics();
 
+    /**
+     * Introduces a delay during the simulation to simulate real-time progress.
+     */
     private void delay() {
         Trace.out(Trace.Level.INFO, "Delay: " + delay);
         try {
@@ -127,9 +175,10 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
 
     @Override
     public void resumeThread() {
+        // Resumes the paused thread
         synchronized (lock) {
             pause = false;
-            lock.notify(); // notify the waiting thread that it can continue
+            lock.notify(); // Notify the waiting thread to continue
         }
     }
 
