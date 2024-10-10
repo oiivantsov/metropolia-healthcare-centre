@@ -1,10 +1,10 @@
 # Health Center Simulator
 
-![Logo](example.png)
-
 ## Overview
 
 The Health Center Simulator is a Java-based simulation application that models patient flow through various service points in a healthcare center, such as check-in, doctor consultation, lab, x-ray, and treatment. The simulation uses JavaFX for its graphical user interface (GUI) and models healthcare workflows using different probabilistic distributions for realistic patient behaviors. Additionally, it connects to a MariaDB database for storing simulation results and configurations.
+
+![Logo](example.png)
 
 ## Features
 - **Patient Flow Simulation:** Models patient movement through different service points, with decisions based on configurable probabilities.
