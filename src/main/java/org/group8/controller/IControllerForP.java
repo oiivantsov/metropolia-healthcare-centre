@@ -3,6 +3,9 @@ package org.group8.controller;
 import org.group8.simulator.model.Distribution;
 import org.group8.simulator.model.Probability;
 
+/**
+ * Interface for controlling actions related to the patient in the health center simulation.
+ */
 public interface IControllerForP {
 
     // Interface provided to the Healthcenter:

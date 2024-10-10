@@ -1,5 +1,8 @@
 package org.group8.controller;
 
+/**
+ * Interface for controlling the health center simulation from the user interface.
+ */
 public interface IControllerForV {
 
     // Interface provided to the user interface:
