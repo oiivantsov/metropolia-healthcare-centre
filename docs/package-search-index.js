@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.group8"},{"l":"org.group8.controller"},{"l":"org.group8.dao"},{"l":"org.group8.datasource"},{"l":"org.group8.distributions"},{"l":"org.group8.simulator.framework"},{"l":"org.group8.simulator.model"},{"l":"org.group8.view"}];updateSearchResults();
