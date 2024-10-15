@@ -3,15 +3,16 @@ package org.group8.simulator.model;
 import jakarta.persistence.*;
 
 /**
- * The {@code Probability} class represents the probability associated with a particular decision type.
- * It is mapped to a database table {@code decision_probability} using JPA annotations.
+ * The Probability class represents a decision probability in the simulation.
+ * Each probability corresponds to a specific decision type, which is stored in the database.
  */
 @Entity
 @Table(name = "decision_probability")
 public class Probability {
 
     /**
-     * The type of decision, which serves as the unique identifier for this probability entry.
+     * The type of decision associated with this probability (e.g., lab, x-ray, treatment).
+     * This field serves as the primary key for the "decision_probability" table.
      */
     @Id
     @Column(name = "decision_type")
@@ -21,20 +22,20 @@ public class Probability {
      * The probability value associated with the decision type.
      */
     @Column
-    private double probability; // Default value
+    private double probability;
 
     /**
-     * Default constructor for {@code Probability}.
-     * Required by JPA.
+     * Default constructor for the Probability class.
+     * Required by JPA for entity instantiation.
      */
     public Probability() {
     }
 
     /**
-     * Constructs a new {@code Probability} with a specified decision type and probability.
+     * Constructs a Probability object with a specified decision type and probability value.
      *
-     * @param decisionType the type of decision
-     * @param probability  the probability value associated with the decision
+     * @param decisionType the type of decision (e.g., lab, x-ray, treatment)
+     * @param probability  the probability associated with the decision type
      */
     public Probability(String decisionType, double probability) {
         this.decisionType = decisionType;
@@ -42,7 +43,7 @@ public class Probability {
     }
 
     /**
-     * Returns the type of decision.
+     * Returns the decision type associated with this probability.
      *
      * @return the decision type
      */
@@ -51,7 +52,7 @@ public class Probability {
     }
 
     /**
-     * Sets the type of decision.
+     * Sets the decision type for this probability.
      *
      * @param decisionType the decision type to set
      */
@@ -60,7 +61,7 @@ public class Probability {
     }
 
     /**
-     * Returns the probability value associated with the decision type.
+     * Returns the probability value associated with this decision.
      *
      * @return the probability value
      */
@@ -69,12 +70,11 @@ public class Probability {
     }
 
     /**
-     * Sets the probability value for the decision type.
+     * Sets the probability value for this decision.
      *
      * @param probability the probability value to set
      */
     public void setProbability(double probability) {
         this.probability = probability;
     }
-
 }

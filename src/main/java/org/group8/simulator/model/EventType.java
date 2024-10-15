@@ -3,9 +3,38 @@ package org.group8.simulator.model;
 import org.group8.simulator.framework.IEventType;
 
 /**
- * The {@code EventType} enum represents different types of events that occur in the simulation.
- * Each event corresponds to a specific step in the patient's journey through the healthcare center.
+ * Enumeration representing the various event types in the simulation.
+ * These events correspond to the different stages in the healthcare process.
  */
 public enum EventType implements IEventType {
-    ARR_CHECKIN, DEP_CHECKIN, DEP_DOCTOR, DEP_LAB, DEP_XRAY, DEP_TREATMENT;
+
+    /**
+     * Represents the event when a patient arrives for check-in.
+     */
+    ARR_CHECKIN,
+
+    /**
+     * Represents the event when a patient departs from check-in.
+     */
+    DEP_CHECKIN,
+
+    /**
+     * Represents the event when a patient departs from the doctor's consultation.
+     */
+    DEP_DOCTOR,
+
+    /**
+     * Represents the event when a patient departs from the lab.
+     */
+    DEP_LAB,
+
+    /**
+     * Represents the event when a patient departs from the x-ray.
+     */
+    DEP_XRAY,
+
+    /**
+     * Represents the event when a patient departs from the treatment area.
+     */
+    DEP_TREATMENT;
 }

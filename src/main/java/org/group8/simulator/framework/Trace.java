@@ -1,38 +1,33 @@
 package org.group8.simulator.framework;
 
 /**
- * The {@code Trace} class provides simple tracing functionality to output messages to the console
- * based on the specified trace level. It is used to control the verbosity of logs during the simulation.
+ * The Trace class is used to log and output messages in the simulation at different levels.
+ * It allows the user to set a trace level, so that only messages of a certain priority or higher are logged.
  */
 public class Trace {
 
     /**
-     * Enum representing different levels of tracing output:
-     * <ul>
-     *   <li>{@code INFO} - Informational messages.</li>
-     *   <li>{@code WAR} - Warning messages.</li>
-     *   <li>{@code ERR} - Error messages.</li>
-     * </ul>
+     * Enum representing the different trace levels: INFO, WAR (Warning), and ERR (Error).
      */
     public enum Level {INFO, WAR, ERR}
 
-    /** The current trace level, which determines the minimum severity of messages that will be printed. */
     private static Level traceLevel;
 
     /**
-     * Sets the global trace level. Messages with a level below this will not be printed.
+     * Sets the current trace level. Only messages with a level equal to or higher than
+     * this level will be output.
      *
-     * @param lvl the trace level to set (INFO, WAR, ERR)
+     * @param lvl the trace level to set
      */
     public static void setTraceLevel(Level lvl) {
         traceLevel = lvl;
     }
 
     /**
-     * Outputs a message to the console if the specified level is greater than or equal to the current trace level.
+     * Outputs a message if the specified trace level is equal to or higher than the current trace level.
      *
-     * @param lvl the severity level of the message
-     * @param txt the message to print
+     * @param lvl the level of the message (INFO, WAR, ERR)
+     * @param txt the text of the message to output
      */
     public static void out(Level lvl, String txt) {
         if (lvl.ordinal() >= traceLevel.ordinal()) {

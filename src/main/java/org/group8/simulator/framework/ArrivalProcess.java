@@ -4,9 +4,8 @@ import org.group8.distributions.ContinuousGenerator;
 import org.group8.distributions.SampleGenerator;
 
 /**
- * The {@code ArrivalProcess} class handles the simulation of arrival events.
- * It uses a {@code SampleGenerator} to determine the time between arrivals and schedules
- * the next event in the {@code EventList}.
+ * The ArrivalProcess class models the process of generating arrival events in the simulation.
+ * It generates events based on a specified time distribution and adds them to the event list.
  */
 public class ArrivalProcess {
 
@@ -15,11 +14,11 @@ public class ArrivalProcess {
     private IEventType type;
 
     /**
-     * Constructs an {@code ArrivalProcess} object.
+     * Constructs a new ArrivalProcess with the specified generator, event list, and event type.
      *
-     * @param g     the sample generator that determines arrival times
-     * @param list  the event list where events are scheduled
-     * @param type  the type of event to schedule
+     * @param g     the generator to generate the next event time (e.g., based on a distribution)
+     * @param list  the event list where the generated event will be added
+     * @param type  the type of event to generate (e.g., arrival at a specific service point)
      */
     public ArrivalProcess(SampleGenerator g, EventList list, IEventType type) {
         this.generator = g;
@@ -28,8 +27,8 @@ public class ArrivalProcess {
     }
 
     /**
-     * Generates and schedules the next arrival event.
-     * The time of the next event is based on the current time and a sampled time.
+     * Generates the next event by sampling from the generator and adding the event
+     * to the event list with a time offset.
      */
     public void generateNext() {
         Event e = new Event(type, Clock.getInstance().getTime() + generator.sampleAsDouble());

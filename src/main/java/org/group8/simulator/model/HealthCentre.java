@@ -13,8 +13,12 @@ import org.group8.simulator.framework.Event;
 import java.util.Random;
 
 /**
- * The {@code HealthCentre} class simulates a healthcare center where patients go through different service points such as check-in, doctor, lab, x-ray, and treatment.
- * It extends {@code AbstractHealthCentre} and handles the arrival and service processes for patients.
+ * The HealthCentre class models a healthcare center simulation, handling patient
+ * flow between various service points, such as check-in, doctor consultation,
+ * lab, x-ray, and treatment.
+ *
+ * It extends {@link AbstractHealthCentre} and implements the logic for initializing
+ * and processing events in the simulation, as well as gathering and saving statistics.
  */
 public class HealthCentre extends AbstractHealthCentre {
 
@@ -24,14 +28,15 @@ public class HealthCentre extends AbstractHealthCentre {
     private IDataControlller dataControlller = new DataController();
 
     /**
-     * Constructs a {@code HealthCentre} object and initializes the check-in process and service points.
+     * Constructs a new HealthCentre with a controller responsible for managing
+     * the graphical interface and simulation events.
      *
-     * @param controller the controller used to handle the flow of patients in the healthcare center
+     * @param controller the controller responsible for managing simulation and UI
      */
     public HealthCentre(IControllerForP controller) {
         super(controller);
 
-        // Check-In process
+        // Initialize the check-in process and define service points
         checkInProcess = createArrivalProcess("arrival", EventType.ARR_CHECKIN);
 
         // Define service points
@@ -43,11 +48,12 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Creates and returns an {@code ArrivalProcess} for the specified service.
+     * Creates an ArrivalProcess for the specified event and associates it with
+     * a distribution.
      *
-     * @param name      the name of the service point
-     * @param eventType the type of event triggered by this arrival process
-     * @return the {@code ArrivalProcess} created based on the distribution data for the service
+     * @param name      the name of the process (e.g., arrival)
+     * @param eventType the type of event to generate (e.g., ARR_CHECKIN)
+     * @return the created ArrivalProcess
      */
     public ArrivalProcess createArrivalProcess(String name, EventType eventType) {
         Distribution distribution = dataControlller.getDistributionObject(name);
@@ -59,11 +65,12 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Creates and returns a {@code ServicePoint} for the specified service.
+     * Creates a ServicePoint for the specified event and associates it with
+     * a distribution.
      *
-     * @param name      the name of the service point
-     * @param eventType the type of event triggered by this service point
-     * @return the {@code ServicePoint} created based on the distribution data for the service
+     * @param name      the name of the service point (e.g., check-in)
+     * @param eventType the type of event to generate (e.g., DEP_CHECKIN)
+     * @return the created ServicePoint
      */
     public ServicePoint createServicePoint(String name, EventType eventType) {
         Distribution distribution = dataControlller.getDistributionObject(name);
@@ -75,7 +82,8 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Initializes the simulation by generating the first arrival event at the check-in process.
+     * Initializes the simulation by generating the first event in the check-in
+     * process.
      */
     @Override
     protected void init() {
@@ -84,7 +92,8 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Processes a specific event in the simulation and manages the flow of patients through different service points.
+     * Processes simulation events such as arrivals and departures from various
+     * service points, making decisions about patient flow after doctor consultations.
      *
      * @param e the event to process
      */
@@ -125,7 +134,6 @@ public class HealthCentre extends AbstractHealthCentre {
 
             case DEP_LAB:
                 controller.removePatientFromLabCanvas();
-                // here we can add some logic to decide where to go next
                 p = lab.removeFromQueue();
                 treatment.addToQueue(p);  // After lab, go to treatment
                 controller.addPatientToTreatmentCanvas();
@@ -133,7 +141,6 @@ public class HealthCentre extends AbstractHealthCentre {
 
             case DEP_XRAY:
                 controller.removePatientFromXRayCanvas();
-                // here we can add some logic to decide where to go next
                 p = xRay.removeFromQueue();
                 treatment.addToQueue(p);  // After x-ray, go to treatment
                 controller.addPatientToTreatmentCanvas();
@@ -149,7 +156,8 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Tries to start service at all service points that are not busy and have patients in the queue.
+     * Attempts to start service at any service point that is not currently busy
+     * and has a queue.
      */
     @Override
     protected void tryEventC() {
@@ -161,7 +169,8 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Prints the statistics of the simulation such as total patients and average time spent, and gathers data for persistence.
+     * Gathers and prints statistics about the simulation run, including total
+     * patients and average time spent in the healthcare center.
      */
     @Override
     protected void statistics() {
@@ -176,13 +185,9 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Gathers and saves the simulation data such as average time spent, probabilities, and time metrics to the database.
-     */
-
-    /**
-     * Returns a string containing the statistics of the simulation.
+     * Retrieves and returns the statistics of the simulation run as a formatted string.
      *
-     * @return a string summarizing the simulation results
+     * @return a string containing simulation statistics
      */
     public String getStatistics() {
         StringBuilder statisticsBuilder = new StringBuilder();
@@ -201,7 +206,8 @@ public class HealthCentre extends AbstractHealthCentre {
     }
 
     /**
-     * Gathers and saves the simulation data such as average time spent, probabilities, and time metrics to the database.
+     * Gathers simulation data, calculates statistics, and saves them using the
+     * data controller.
      */
     public void gatherAndSaveSimulationData() {
 
@@ -230,7 +236,6 @@ public class HealthCentre extends AbstractHealthCentre {
                 arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime
         );
 
-        // Persist the new results
         dataControlller.persistSimulationResults(simulationResults);
     }
 

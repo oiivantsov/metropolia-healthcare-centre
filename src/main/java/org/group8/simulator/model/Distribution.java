@@ -3,40 +3,51 @@ package org.group8.simulator.model;
 import jakarta.persistence.*;
 
 /**
- * The {@code Distribution} class represents a distribution entity that is used to define
- * the statistical distribution for different simulation events, along with their average time.
- * This entity is persisted in the database.
+ * Represents a distribution entity for an event in the simulation.
+ * This class is mapped to the "distribution" table in the database.
+ * It contains information about the event, its associated distribution,
+ * and the average time for the event.
  */
 @Entity
 @Table(name = "distribution")
 public class Distribution {
 
-    /** The event associated with this distribution, serving as the unique identifier. */
+    /**
+     * The unique event name associated with the distribution.
+     * This field is the primary key for the "distribution" table.
+     */
     @Id
     @Column(name = "event", nullable = false, unique = true)
     private String event;
 
-    /** The type of statistical distribution (e.g., negexp, poisson) used for this event. */
+    /**
+     * The type of distribution (e.g., normal, negexp, uniform) used for the event.
+     */
     @Column(name = "distribution", nullable = false)
     private String distribution;
 
-    /** The average time associated with this event's distribution. */
+    /**
+     * The average time (in seconds or another unit) associated with the event's distribution.
+     */
     @Column(name = "average_time", nullable = false)
     private double averageTime;
 
     // Constructors
+
     /**
-     * Default constructor for JPA.
+     * Default constructor for the Distribution class.
+     * Required by JPA for entity instantiation.
      */
     public Distribution() {
     }
 
     /**
-     * Constructs a new {@code Distribution} with the specified event, distribution type, and average time.
+     * Constructs a new Distribution with the specified event, distribution type,
+     * and average time.
      *
-     * @param event the event associated with this distribution
-     * @param distribution the type of statistical distribution
-     * @param averageTime the average time for the event
+     * @param event        the name of the event
+     * @param distribution the type of distribution used for the event
+     * @param averageTime  the average time associated with the distribution
      */
     public Distribution(String event, String distribution, double averageTime) {
         this.event = event;
@@ -45,35 +56,36 @@ public class Distribution {
     }
 
     // Getters and Setters
+
     /**
-     * Returns the event associated with this distribution.
+     * Gets the event name associated with this distribution.
      *
-     * @return the event as a {@code String}
+     * @return the event name
      */
     public String getEvent() {
         return event;
     }
 
     /**
-     * Sets the event for this distribution.
+     * Sets the event name for this distribution.
      *
-     * @param event the event to set
+     * @param event the event name to set
      */
     public void setEvent(String event) {
         this.event = event;
     }
 
     /**
-     * Returns the average time for this event.
+     * Gets the average time associated with this distribution.
      *
-     * @return the average time as a {@code double}
+     * @return the average time
      */
     public double getAverageTime() {
         return averageTime;
     }
 
     /**
-     * Sets the average time for this event.
+     * Sets the average time for this distribution.
      *
      * @param averageTime the average time to set
      */
@@ -82,9 +94,9 @@ public class Distribution {
     }
 
     /**
-     * Returns the type of distribution used for this event.
+     * Gets the type of distribution for this event.
      *
-     * @return the distribution type as a {@code String}
+     * @return the distribution type
      */
     public String getDistribution() {
         return distribution;

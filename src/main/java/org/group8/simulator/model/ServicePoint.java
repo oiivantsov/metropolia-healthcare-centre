@@ -10,43 +10,25 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * The {@code ServicePoint} class represents a service point where patients are queued for service.
- * It uses a {@link SampleGenerator} to generate service times and an {@link EventList} to schedule events.
+ * The ServicePoint class represents a point in the healthcare simulation where patients receive services.
+ * Each service point has a queue for waiting patients, and it generates events based on service times
+ * determined by a given distribution.
  */
 public class ServicePoint {
 
-    /**
-     * A queue that holds patients waiting for service.
-     */
     private final Queue<Patient> queue = new LinkedList<>();
-
-    /**
-     * A generator that provides random service times for the patients.
-     */
-    private final SampleGenerator generator;  // Use the common interface
-
-
-    /**
-     * The event list where events are scheduled after service is completed.
-     */
+    private final SampleGenerator generator;  // Generates service times
     private final EventList eventList;
-
-    /**
-     * The type of event to schedule after service is completed.
-     */
     private final EventType scheduledEventType;
 
-    /**
-     * Flag to indicate whether the service point is currently busy.
-     */
     private boolean busy = false;
 
     /**
-     * Constructs a new {@code ServicePoint}.
+     * Constructs a new ServicePoint with a specified service time generator, event list, and event type.
      *
-     * @param g     the sample generator used to generate service times
-     * @param list  the event list to add events to
-     * @param type  the type of event to schedule after a service is completed
+     * @param g    the generator for service times (e.g., negexp, poisson)
+     * @param list the event list to which service completion events will be added
+     * @param type the type of event scheduled after service completion (e.g., departure)
      */
     public ServicePoint(SampleGenerator g, EventList list, EventType type) {
         this.generator = g;
@@ -55,19 +37,18 @@ public class ServicePoint {
     }
 
     /**
-     * Adds a patient to the queue for service.
+     * Adds a patient to the service point queue.
      *
-     * @param p the patient to be added to the queue
+     * @param p the patient to add to the queue
      */
     public void addToQueue(Patient p) {
         queue.add(p);
     }
 
     /**
-     * Removes and returns the patient at the front of the queue.
-     * Sets the service point to not busy.
+     * Removes a patient from the service point queue, marking the service point as no longer busy.
      *
-     * @return the patient removed from the front of the queue, or {@code null} if the queue is empty
+     * @return the patient removed from the queue
      */
     public Patient removeFromQueue() {
         busy = false;
@@ -75,12 +56,11 @@ public class ServicePoint {
     }
 
     /**
-     * Starts the service for the patient at the front of the queue.
-     * If the queue is empty, no service is started.
-     * An event is scheduled for when the service is expected to finish.
+     * Starts the service for the next patient in the queue. It generates a service completion event
+     * based on the service time sampled from the generator.
      */
     public void startService() {
-        if (queue.isEmpty()) return; // to avoid null-exception when queue is empty
+        if (queue.isEmpty()) return; // Avoid null-exception when queue is empty
         Trace.out(Trace.Level.INFO, "Starting service for patient " + queue.peek().getId());
 
         busy = true;
@@ -90,18 +70,18 @@ public class ServicePoint {
     }
 
     /**
-     * Returns whether the service point is currently busy.
+     * Checks if the service point is currently busy.
      *
-     * @return {@code true} if the service point is busy, otherwise {@code false}
+     * @return {@code true} if the service point is busy, {@code false} otherwise
      */
     public boolean isBusy() {
         return busy;
     }
 
     /**
-     * Checks if there are any patients in the queue.
+     * Checks if there are patients in the queue.
      *
-     * @return {@code true} if the queue is not empty, otherwise {@code false}
+     * @return {@code true} if the queue is not empty, {@code false} otherwise
      */
     public boolean hasQueue() {
         return !queue.isEmpty();
