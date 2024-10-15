@@ -12,6 +12,10 @@ import org.group8.simulator.framework.Event;
 
 import java.util.Random;
 
+/**
+ * The {@code HealthCentre} class simulates a healthcare center where patients go through different service points such as check-in, doctor, lab, x-ray, and treatment.
+ * It extends {@code AbstractHealthCentre} and handles the arrival and service processes for patients.
+ */
 public class HealthCentre extends AbstractHealthCentre {
 
     private ArrivalProcess checkInProcess;
@@ -19,6 +23,11 @@ public class HealthCentre extends AbstractHealthCentre {
     private Random decisionMaker = new Random();
     private IDataControlller dataControlller = new DataController();
 
+    /**
+     * Constructs a {@code HealthCentre} object and initializes the check-in process and service points.
+     *
+     * @param controller the controller used to handle the flow of patients in the healthcare center
+     */
     public HealthCentre(IControllerForP controller) {
         super(controller);
 
@@ -33,6 +42,13 @@ public class HealthCentre extends AbstractHealthCentre {
         treatment = createServicePoint("treatment", EventType.DEP_TREATMENT);
     }
 
+    /**
+     * Creates and returns an {@code ArrivalProcess} for the specified service.
+     *
+     * @param name      the name of the service point
+     * @param eventType the type of event triggered by this arrival process
+     * @return the {@code ArrivalProcess} created based on the distribution data for the service
+     */
     public ArrivalProcess createArrivalProcess(String name, EventType eventType) {
         Distribution distribution = dataControlller.getDistributionObject(name);
         return switch (distribution.getDistribution()) {
@@ -42,6 +58,13 @@ public class HealthCentre extends AbstractHealthCentre {
         };
     }
 
+    /**
+     * Creates and returns a {@code ServicePoint} for the specified service.
+     *
+     * @param name      the name of the service point
+     * @param eventType the type of event triggered by this service point
+     * @return the {@code ServicePoint} created based on the distribution data for the service
+     */
     public ServicePoint createServicePoint(String name, EventType eventType) {
         Distribution distribution = dataControlller.getDistributionObject(name);
         return switch (distribution.getDistribution()) {
@@ -51,12 +74,20 @@ public class HealthCentre extends AbstractHealthCentre {
         };
     }
 
+    /**
+     * Initializes the simulation by generating the first arrival event at the check-in process.
+     */
     @Override
     protected void init() {
         // Initialize the first event (arrival at Check-In)
         checkInProcess.generateNext();
     }
 
+    /**
+     * Processes a specific event in the simulation and manages the flow of patients through different service points.
+     *
+     * @param e the event to process
+     */
     @Override
     protected void processEvent(Event e) {
         Patient p;
@@ -117,6 +148,9 @@ public class HealthCentre extends AbstractHealthCentre {
         }
     }
 
+    /**
+     * Tries to start service at all service points that are not busy and have patients in the queue.
+     */
     @Override
     protected void tryEventC() {
         for (ServicePoint sp : new ServicePoint[]{checkIn, doctor, lab, xRay, treatment}) {
@@ -126,6 +160,9 @@ public class HealthCentre extends AbstractHealthCentre {
         }
     }
 
+    /**
+     * Prints the statistics of the simulation such as total patients and average time spent, and gathers data for persistence.
+     */
     @Override
     protected void statistics() {
         System.out.println();
@@ -138,6 +175,15 @@ public class HealthCentre extends AbstractHealthCentre {
         gatherAndSaveSimulationData();
     }
 
+    /**
+     * Gathers and saves the simulation data such as average time spent, probabilities, and time metrics to the database.
+     */
+
+    /**
+     * Returns a string containing the statistics of the simulation.
+     *
+     * @return a string summarizing the simulation results
+     */
     public String getStatistics() {
         StringBuilder statisticsBuilder = new StringBuilder();
 
@@ -154,6 +200,9 @@ public class HealthCentre extends AbstractHealthCentre {
         return statisticsBuilder.toString();
     }
 
+    /**
+     * Gathers and saves the simulation data such as average time spent, probabilities, and time metrics to the database.
+     */
     public void gatherAndSaveSimulationData() {
 
         // Calculation for patient completion time
