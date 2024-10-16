@@ -1182,69 +1182,83 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     }
 
     /**
-     * Displays a dialog with formatted simulation results.
+     * Displays a dialog with a list of completed simulations. When a simulation is selected, its detailed statistics are displayed.
      * <p>
      * This method fetches all the simulation results from the {@code dataController},
-     * and formats them into a human-readable form using a {@code StringBuilder}. The results
-     * include various statistics for each simulation such as simulation ID, average time,
-     * total patients, and probabilities for different events (lab, x-ray, treatment, etc.).
-     * The results are then displayed in a dialog (implementation of the actual dialog is omitted in this method).
+     * and presents a list of completed simulations. Upon selecting a specific simulation,
+     * the user will see full statistics for that simulation in a detailed view.
      * </p>
-     *
-     * <ul>
-     *     <li>Simulation ID</li>
-     *     <li>Average Time</li>
-     *     <li>Total Patients</li>
-     *     <li>Completed Visits</li>
-     *     <li>Lab, X-ray, and Treatment Probabilities</li>
-     *     <li>Arrival Time, Check-in Time, Doctor Time, Lab Time, X-ray Time, Treatment Time, End Time</li>
-     * </ul>
-     *
-     * The data is formatted with two decimal places for numerical values where applicable.
      *
      * @see SimulationResults
      * @see DataController#getSimulationResults()
      */
-
     public void showResultsDialog() {
         // Fetch all simulation results
         List<SimulationResults> results = dataController.getSimulationResults();
 
-        // Format the results into a readable format
-        StringBuilder statistics = new StringBuilder();
+        // Create a ListView to show the list of simulation IDs
+        ListView<String> listView = new ListView<>();
         for (SimulationResults result : results) {
-            statistics.append("Simulation ID: ").append(result.getSimulationId()).append("\n");
-            statistics.append("Average Time: ").append(String.format("%.2f", result.getAverageTime())).append("\n");
-            statistics.append("Total Patients: ").append(result.getTotalPatients()).append("\n");
-            statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n");
-            statistics.append("End Time: ").append(String.format("%.2f", result.getEndTime())).append("\n\n");
-            statistics.append("--Distiributions\n\n");
-            statistics.append("Arrival Time: ").append(result.getArrivalTime()).append("\n");
-            statistics.append("Check-in Time: ").append(result.getCheckInTime()).append("\n");
-            statistics.append("Doctor Time: ").append(result.getDoctorTime()).append("\n");
-            statistics.append("Lab Time: ").append(result.getLabTime()).append("\n");
-            statistics.append("X-ray Time: ").append(result.getXrayTime()).append("\n");
-            statistics.append("Treatment Time: ").append(result.getTreatmentTime()).append("\n\n");
-            statistics.append("--Probabilitys\n\n");
-            statistics.append("Lab Probability: ").append(String.format("%.2f", result.getLabProbability())).append("\n");
-            statistics.append("X-ray Probability: ").append(String.format("%.2f", result.getXrayProbability())).append("\n");
-            statistics.append("Treatment Probability: ").append(String.format("%.2f", result.getTreatmentProbability())).append("\n");
-            statistics.append("------------------------------\n");
+            listView.getItems().add("Simulation ID: " + result.getSimulationId());
         }
 
-        // Create a TextArea to display the results
-        TextArea textArea = new TextArea(statistics.toString());
-        textArea.setWrapText(true);  // Enable text wrapping
-        textArea.setEditable(false);   // Make it read-only
+        // Create a TextArea to display the detailed statistics of the selected simulation
+        TextArea detailsArea = new TextArea();
+        detailsArea.setWrapText(true);  // Enable text wrapping
+        detailsArea.setEditable(false);  // Make it read-only
 
-        // Wrap the TextArea in a ScrollPane
-        ScrollPane scrollPane = new ScrollPane(textArea);
-        scrollPane.setFitToWidth(true); // Allow the ScrollPane to fit to width
-        scrollPane.setFitToHeight(true); // Allow the ScrollPane to fit to height
+        // Listen for selection changes in the ListView and display the detailed statistics
+        listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Find the selected simulation by its ID
+                int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+                SimulationResults selectedResult = results.get(selectedIndex);
+
+                // Format the detailed statistics for the selected simulation
+                StringBuilder statistics = new StringBuilder();
+                statistics.append("Simulation ID: ").append(selectedResult.getSimulationId()).append("\n");
+                statistics.append("Average Time: ").append(String.format("%.2f", selectedResult.getAverageTime())).append("\n");
+                statistics.append("Total Patients: ").append(selectedResult.getTotalPatients()).append("\n");
+                statistics.append("Completed Visits: ").append(selectedResult.getCompletedVisits()).append("\n");
+                statistics.append("End Time: ").append(String.format("%.2f", selectedResult.getEndTime())).append("\n\n");
+                statistics.append("--Distributions\n\n");
+                statistics.append("Arrival Time: ").append(selectedResult.getArrivalTime()).append("\n");
+                statistics.append("Check-in Time: ").append(selectedResult.getCheckInTime()).append("\n");
+                statistics.append("Doctor Time: ").append(selectedResult.getDoctorTime()).append("\n");
+                statistics.append("Lab Time: ").append(selectedResult.getLabTime()).append("\n");
+                statistics.append("X-ray Time: ").append(selectedResult.getXrayTime()).append("\n");
+                statistics.append("Treatment Time: ").append(selectedResult.getTreatmentTime()).append("\n\n");
+                statistics.append("--Probabilities\n\n");
+                statistics.append("Lab Probability: ").append(String.format("%.2f", selectedResult.getLabProbability())).append("\n");
+                statistics.append("X-ray Probability: ").append(String.format("%.2f", selectedResult.getXrayProbability())).append("\n");
+                statistics.append("Treatment Probability: ").append(String.format("%.2f", selectedResult.getTreatmentProbability())).append("\n\n");
+                statistics.append("--Utilization Rates\n\n");
+                statistics.append("Check-In Utilization: ").append(String.format("%.2f%%", selectedResult.getCheckInUtilization() * 100)).append("\n");
+                statistics.append("Doctor Utilization: ").append(String.format("%.2f%%", selectedResult.getDoctorUtilization() * 100)).append("\n");
+                statistics.append("Lab Utilization: ").append(String.format("%.2f%%", selectedResult.getLabUtilization() * 100)).append("\n");
+                statistics.append("X-ray Utilization: ").append(String.format("%.2f%%", selectedResult.getXrayUtilization() * 100)).append("\n");
+                statistics.append("Treatment Utilization: ").append(String.format("%.2f%%", selectedResult.getTreatmentUtilization() * 100)).append("\n");
+                statistics.append("------------------------------\n");
+
+                // Update the detailsArea with the selected simulation's statistics
+                detailsArea.setText(statistics.toString());
+            }
+        });
+
+        // Create a layout for the ListView and the details TextArea
+        HBox layout = new HBox(10);
+        layout.getChildren().addAll(listView, detailsArea);
+        layout.setPrefWidth(1000);  // Set preferred width for the layout
+        layout.setPrefHeight(600); // Set preferred height for the layout
+
+        // Wrap the layout in a ScrollPane
+        ScrollPane scrollPane = new ScrollPane(layout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
 
         // Create and configure the dialog
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Simulation Results");
+        dialog.setTitle("Completed Simulations");
         dialog.getDialogPane().setContent(scrollPane);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK); // Add an OK button
         dialog.setResizable(true); // Make the dialog resizable
