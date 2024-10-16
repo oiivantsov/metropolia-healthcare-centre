@@ -22,10 +22,11 @@ public class DataController implements IDataControlller {
      * @param treatment The probability for treatment
      */
     @Override
-    public void setProbabilities(double lab, double xray, double treatment) {
+    public void setProbabilities(double lab, double xray, double treatment, double noTreatment) {
         probabilityDao.update(new Probability("LAB", lab));
         probabilityDao.update(new Probability("XRAY", xray));
         probabilityDao.update(new Probability("TREATMENT", treatment));
+        probabilityDao.update(new Probability("NO_TREATMENT", noTreatment));
     }
 
     /**

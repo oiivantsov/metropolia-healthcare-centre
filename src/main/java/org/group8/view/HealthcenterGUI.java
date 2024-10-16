@@ -78,11 +78,13 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     private Slider labProbabilitySlider;
     private Slider xrayProbabilitySlider;
     private Slider treatmentProbabilitySlider;
+    private Slider noTreatmentProbabilitySlider;
 
     // Labels to show the probability values
     private Label labProbabilityValue;
     private Label xrayProbabilityValue;
     private Label treatmentProbabilityValue;
+    private Label noTreatmentProbabilityValue;
 
     // Progress bar
     private ProgressBar progressBar;
@@ -488,7 +490,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     }
 
     /**
-     * Displays a modal dialog that allows the user to edit the probabilities for Lab, X-Ray, and Treatment.
+     * Displays a modal dialog that allows the user to edit the probabilities for Lab, X-Ray, Treatment, and No Treatment.
      * The dialog includes sliders to adjust each probability and applies the changes upon confirmation.
      *
      * <p>This method creates a modal dialog window that blocks interaction with other windows until the user
@@ -501,12 +503,13 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
      *   <li>Lab Probability</li>
      *   <li>X-Ray Probability</li>
      *   <li>Treatment Probability</li>
+     *   <li>No Treatment Probability</li>
      * </ul>
      *
      * <p>Components within the dialog:</p>
      * <ul>
      *   <li>Labels showing the current values of the sliders</li>
-     *   <li>Three sliders to adjust Lab, X-Ray, and Treatment probabilities</li>
+     *   <li>Four sliders to adjust Lab, X-Ray, Treatment, and No Treatment probabilities</li>
      *   <li>An "Apply Probabilities" button that saves the user's input and closes the dialog</li>
      * </ul>
      *
@@ -522,14 +525,17 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         labProbabilitySlider = createProbabilitySlider("Lab Probability", "LAB");
         xrayProbabilitySlider = createProbabilitySlider("X-Ray Probability", "XRAY");
         treatmentProbabilitySlider = createProbabilitySlider("Treatment Probability", "TREATMENT");
+        noTreatmentProbabilitySlider = createProbabilitySlider("No Treatment Probability", "NO_TREATMENT");
 
         labProbabilityValue = new Label("Lab: " + String.format("%.2f", labProbabilitySlider.getValue()));
         xrayProbabilityValue = new Label("X-Ray: " + String.format("%.2f", xrayProbabilitySlider.getValue()));
         treatmentProbabilityValue = new Label("Treatment: " + String.format("%.2f", treatmentProbabilitySlider.getValue()));
+        noTreatmentProbabilityValue = new Label("No Treatment: " + String.format("%.2f", noTreatmentProbabilitySlider.getValue()));
 
         labProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
         xrayProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
         treatmentProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
+        noTreatmentProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
 
         Button applyProbabilitiesButton = new Button("Apply Probabilities");
 
@@ -537,7 +543,8 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
                     double labProbability = labProbabilitySlider.getValue();
                     double xrayProbability = xrayProbabilitySlider.getValue();
                     double treatmentProbability = treatmentProbabilitySlider.getValue();
-                    dataController.setProbabilities(labProbability, xrayProbability, treatmentProbability);
+                    double noTreatmentProbability = noTreatmentProbabilitySlider.getValue();
+                    dataController.setProbabilities(labProbability, xrayProbability, treatmentProbability, noTreatmentProbability);
                     dialog.close();
                 }
         );
@@ -553,17 +560,21 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         HBox treatmentProbabilityBox = new HBox(10, new Label("Treatment Probability:"), treatmentProbabilitySlider, treatmentProbabilityValue);
         treatmentProbabilityBox.setAlignment(Pos.CENTER);
 
+        HBox noTreatmentProbabilityBox = new HBox(10, new Label("No Treatment Probability:"), noTreatmentProbabilitySlider, noTreatmentProbabilityValue);
+        noTreatmentProbabilityBox.setAlignment(Pos.CENTER);
+
         layout.getChildren().addAll(
                 labProbabilityBox,
                 xrayProbabilityBox,
                 treatmentProbabilityBox,
+                noTreatmentProbabilityBox,
                 applyProbabilitiesButton
         );
 
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(layout, 700, 250);
+        Scene scene = new Scene(layout, 700, 300);
         applyTheme(scene, isBlackTheme);
         dialog.setScene(scene);
         dialog.showAndWait();
@@ -1245,7 +1256,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
     /**
      * Updates the probability values displayed in the GUI based on the current
-     * values of the probability sliders for lab, X-ray, and treatment.
+     * values of the probability sliders for lab, X-ray, treatment, and no treatment.
      *
      * <p>This method first calculates the total of the probabilities from the
      * respective sliders. If the total exceeds 1, it reduces each slider's value
@@ -1254,18 +1265,23 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
      * to two decimal places.</p>
      */
     private void updateProbabilityValues() {
-        double total = labProbabilitySlider.getValue() + xrayProbabilitySlider.getValue() + treatmentProbabilitySlider.getValue();
+        double total = labProbabilitySlider.getValue()
+                + xrayProbabilitySlider.getValue()
+                + treatmentProbabilitySlider.getValue()
+                + noTreatmentProbabilitySlider.getValue();
 
         if (total > 1) {
             double excess = total - 1;
-            labProbabilitySlider.setValue(labProbabilitySlider.getValue() - excess / 3);
-            xrayProbabilitySlider.setValue(xrayProbabilitySlider.getValue() - excess / 3);
-            treatmentProbabilitySlider.setValue(treatmentProbabilitySlider.getValue() - excess / 3);
+            labProbabilitySlider.setValue(labProbabilitySlider.getValue() - excess / 4);
+            xrayProbabilitySlider.setValue(xrayProbabilitySlider.getValue() - excess / 4);
+            treatmentProbabilitySlider.setValue(treatmentProbabilitySlider.getValue() - excess / 4);
+            noTreatmentProbabilitySlider.setValue(noTreatmentProbabilitySlider.getValue() - excess / 4);
         }
 
         labProbabilityValue.setText("Lab: " + String.format("%.2f", labProbabilitySlider.getValue()));
         xrayProbabilityValue.setText("X-Ray: " + String.format("%.2f", xrayProbabilitySlider.getValue()));
         treatmentProbabilityValue.setText("Treatment: " + String.format("%.2f", treatmentProbabilitySlider.getValue()));
+        noTreatmentProbabilityValue.setText("No Treatment: " + String.format("%.2f", noTreatmentProbabilitySlider.getValue()));
     }
 
 
