@@ -1,5 +1,6 @@
-INSERT INTO decision_probability (decision_type, probability) VALUES ('LAB', 0.45);
-INSERT INTO decision_probability (decision_type, probability) VALUES ('XRAY', 0.45);
+INSERT INTO decision_probability (decision_type, probability) VALUES ('NO_TREATMENT', 0.10);
+INSERT INTO decision_probability (decision_type, probability) VALUES ('LAB', 0.40);
+INSERT INTO decision_probability (decision_type, probability) VALUES ('XRAY', 0.40);
 INSERT INTO decision_probability (decision_type, probability) VALUES ('TREATMENT', 0.10);
 
 INSERT INTO distribution (event, distribution, average_time) VALUES ('check-in', 'negexp', 3);

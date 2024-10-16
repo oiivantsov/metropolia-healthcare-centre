@@ -120,10 +120,16 @@ public class HealthCentre extends AbstractHealthCentre {
                 p = doctor.removeFromQueue();
                 // decision-making process (random based on enum probabilities)
                 nextStep = decisionMaker.nextDouble();
-                if (nextStep < dataControlller.getProbability("LAB")) {
+
+                // Check if the patient leaves after the doctor consultation
+                if (nextStep < dataControlller.getProbability("NO_TREATMENT")) {
+                    // Patient leaves the healthcare centre without further treatment
+                    p.setDepartureTime(Clock.getInstance().getTime());
+                    p.report();
+                } else if (nextStep < dataControlller.getProbability("NO_TREATMENT") + dataControlller.getProbability("LAB")) {
                     lab.addToQueue(p);  // Lab
                     controller.addPatientToLabCanvas();
-                } else if (nextStep < dataControlller.getProbability("LAB") + dataControlller.getProbability("XRAY")) {
+                } else if (nextStep < dataControlller.getProbability("NO_TREATMENT") + dataControlller.getProbability("LAB") + dataControlller.getProbability("XRAY")) {
                     xRay.addToQueue(p);  // X-ray
                     controller.addPatientToXRayCanvas();
                 } else {

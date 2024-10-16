@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface IDataControlller {
     double getProbability(String decisionType);
-    void setProbabilities(double lab, double xray, double treatment);
+    void setProbabilities(double lab, double xray, double treatment, double noTreatment);
 
     String getDistribution(String event);
     double getAverageTime(String event);
