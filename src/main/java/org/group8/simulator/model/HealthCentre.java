@@ -27,6 +27,12 @@ public class HealthCentre extends AbstractHealthCentre {
     private Random decisionMaker = new Random();
     private IDataControlller dataControlller = new DataController();
 
+    // statics variables
+    private int visitedLab = 0;
+    private int visitedXRay = 0;
+    private int visitedTreatment = 0;
+    private int sentToSelfCare = 0;
+
     /**
      * Constructs a new HealthCentre with a controller responsible for managing
      * the graphical interface and simulation events.
@@ -124,16 +130,20 @@ public class HealthCentre extends AbstractHealthCentre {
                 // Check if the patient leaves after the doctor consultation
                 if (nextStep < dataControlller.getProbability("NO_TREATMENT")) {
                     // Patient leaves the healthcare centre without further treatment
+                    sentToSelfCare++;
                     p.setDepartureTime(Clock.getInstance().getTime());
                     p.report();
                 } else if (nextStep < dataControlller.getProbability("NO_TREATMENT") + dataControlller.getProbability("LAB")) {
                     lab.addToQueue(p);  // Lab
+                    visitedLab++;
                     controller.addPatientToLabCanvas();
                 } else if (nextStep < dataControlller.getProbability("NO_TREATMENT") + dataControlller.getProbability("LAB") + dataControlller.getProbability("XRAY")) {
                     xRay.addToQueue(p);  // X-ray
+                    visitedXRay++;
                     controller.addPatientToXRayCanvas();
                 } else {
                     treatment.addToQueue(p);  // Treatment
+                    visitedTreatment++;
                     controller.addPatientToTreatmentCanvas();
                 }
                 break;
@@ -142,6 +152,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 controller.removePatientFromLabCanvas();
                 p = lab.removeFromQueue();
                 treatment.addToQueue(p);  // After lab, go to treatment
+                visitedTreatment++;
                 controller.addPatientToTreatmentCanvas();
                 break;
 
@@ -149,6 +160,7 @@ public class HealthCentre extends AbstractHealthCentre {
                 controller.removePatientFromXRayCanvas();
                 p = xRay.removeFromQueue();
                 treatment.addToQueue(p);  // After x-ray, go to treatment
+                visitedTreatment++;
                 controller.addPatientToTreatmentCanvas();
                 break;
 
@@ -198,15 +210,28 @@ public class HealthCentre extends AbstractHealthCentre {
     public String getStatistics() {
         StringBuilder statisticsBuilder = new StringBuilder();
 
+        statisticsBuilder.append("----- Simulation Statistics -----\n");
         statisticsBuilder.append(String.format("Simulation ended at time: %.2f\n", Clock.getInstance().getTime()));
-        statisticsBuilder.append(String.format("Total patients arrived at healthcare center: %d\n", Patient.getTotalPatients()));
-        statisticsBuilder.append(String.format("Total patients completed the visit: %d\n", Patient.getCompletedPatients()));
+        statisticsBuilder.append(String.format("Total patients arrived at the healthcare center: %d\n", Patient.getTotalPatients()));
+        statisticsBuilder.append(String.format("Total patients completed their visit: %d\n", Patient.getCompletedPatients()));
+        statisticsBuilder.append("---------------------------------\n");
+
+        // Visited service points
+        statisticsBuilder.append("Service Point Visits:\n");
+        statisticsBuilder.append(String.format("  Lab visits: %d\n", visitedLab));
+        statisticsBuilder.append(String.format("  X-Ray visits: %d\n", visitedXRay));
+        statisticsBuilder.append(String.format("  Treatment visits: %d\n", visitedTreatment));
+        statisticsBuilder.append(String.format("  Sent to self-care: %d\n", sentToSelfCare));
+        statisticsBuilder.append("---------------------------------\n");
 
         // Calculating average time
         int completedPatients = Patient.getCompletedPatients();
         double averageTime = (completedPatients > 0) ? Patient.getTotalTime() / (double) completedPatients : 0.0;
 
-        statisticsBuilder.append(String.format("Average time spent by all patients who completed the visit: %.2f\n", averageTime));
+        statisticsBuilder.append(String.format("Average time spent per patient (completed visits): %.2f time units\n", averageTime));
+        statisticsBuilder.append("---------------------------------\n");
+
+        statisticsBuilder.append("End of report\n");
 
         return statisticsBuilder.toString();
     }
