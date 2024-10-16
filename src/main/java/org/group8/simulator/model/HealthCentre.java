@@ -259,7 +259,8 @@ public class HealthCentre extends AbstractHealthCentre {
         // Probabilities
         double labProbability = dataControlller.getProbability("LAB");
         double xrayProbability = dataControlller.getProbability("XRAY");
-        double treatmentProbability = 1.0 - (labProbability + xrayProbability);
+        double treatmentProbability = dataControlller.getProbability("TREATMENT");
+        double noTreatmentProbability = dataControlller.getProbability("NO_TREATMENT");
 
         // Time-related values
         double arrivalTime = dataControlller.getAverageTime("arrival");
@@ -279,7 +280,7 @@ public class HealthCentre extends AbstractHealthCentre {
         // Create SimulationResults object using the new constructor including utilization rates
         SimulationResults simulationResults = new SimulationResults(
                 averageTime, Patient.getTotalPatients(), completedPatients,
-                labProbability, xrayProbability, treatmentProbability,
+                labProbability, xrayProbability, treatmentProbability, noTreatmentProbability,
                 arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime,
                 checkInUtilization, doctorUtilization, labUtilization, xRayUtilization, treatmentUtilization
         );
