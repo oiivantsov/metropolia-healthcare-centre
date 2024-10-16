@@ -22,6 +22,8 @@ public class ServicePoint {
     private final EventType scheduledEventType;
 
     private boolean busy = false;
+    private double totalBusyTime = 0;  // Tracks total busy time
+    private double lastStartTime = 0;  // Tracks when the service started
 
     /**
      * Constructs a new ServicePoint with a specified service time generator, event list, and event type.
@@ -51,7 +53,13 @@ public class ServicePoint {
      * @return the patient removed from the queue
      */
     public Patient removeFromQueue() {
-        busy = false;
+        // Calculate the time the service point was busy
+        double endTime = Clock.getInstance().getTime();
+        if (busy) {
+            totalBusyTime += (endTime - lastStartTime);
+        }
+
+        busy = false;  // Mark as no longer busy
         return queue.poll();
     }
 
@@ -64,6 +72,7 @@ public class ServicePoint {
         Trace.out(Trace.Level.INFO, "Starting service for patient " + queue.peek().getId());
 
         busy = true;
+        lastStartTime = Clock.getInstance().getTime();  // Record the time service starts
         Patient p = queue.peek();
         double serviceTime = generator.sampleAsDouble();
         eventList.add(new Event(scheduledEventType, Clock.getInstance().getTime() + serviceTime));
@@ -85,5 +94,15 @@ public class ServicePoint {
      */
     public boolean hasQueue() {
         return !queue.isEmpty();
+    }
+
+    /**
+     * Gets the utilization rate of the service point.
+     *
+     * @return the utilization rate as a percentage (0 to 1)
+     */
+    public double getUtilizationRate() {
+        double totalTime = Clock.getInstance().getTime();  // Total simulation time
+        return totalBusyTime / totalTime;  // Utilization rate as a ratio
     }
 }

@@ -224,6 +224,15 @@ public class HealthCentre extends AbstractHealthCentre {
         statisticsBuilder.append(String.format("  Sent to self-care: %d\n", sentToSelfCare));
         statisticsBuilder.append("---------------------------------\n");
 
+        // Print utilization rates for each service point
+        statisticsBuilder.append("Service Point Utilization Rates:\n");
+        statisticsBuilder.append(String.format("  Check-In: %.2f%%\n", checkIn.getUtilizationRate() * 100));
+        statisticsBuilder.append(String.format("  Doctor: %.2f%%\n", doctor.getUtilizationRate() * 100));
+        statisticsBuilder.append(String.format("  Lab: %.2f%%\n", lab.getUtilizationRate() * 100));
+        statisticsBuilder.append(String.format("  X-Ray: %.2f%%\n", xRay.getUtilizationRate() * 100));
+        statisticsBuilder.append(String.format("  Treatment: %.2f%%\n", treatment.getUtilizationRate() * 100));
+        statisticsBuilder.append("---------------------------------\n");
+
         // Calculating average time
         int completedPatients = Patient.getCompletedPatients();
         double averageTime = (completedPatients > 0) ? Patient.getTotalTime() / (double) completedPatients : 0.0;
@@ -238,7 +247,7 @@ public class HealthCentre extends AbstractHealthCentre {
 
     /**
      * Gathers simulation data, calculates statistics, and saves them using the
-     * data controller.
+     * data controller, including utilization rates for each service point.
      */
     public void gatherAndSaveSimulationData() {
 
@@ -260,13 +269,22 @@ public class HealthCentre extends AbstractHealthCentre {
         double xrayTime = dataControlller.getAverageTime("xray");
         double treatmentTime = dataControlller.getAverageTime("treatment");
 
-        // Create SimulationResults object using the simplified constructor
+        // Utilization rates for each service point
+        double checkInUtilization = checkIn.getUtilizationRate();
+        double doctorUtilization = doctor.getUtilizationRate();
+        double labUtilization = lab.getUtilizationRate();
+        double xRayUtilization = xRay.getUtilizationRate();
+        double treatmentUtilization = treatment.getUtilizationRate();
+
+        // Create SimulationResults object using the new constructor including utilization rates
         SimulationResults simulationResults = new SimulationResults(
                 averageTime, Patient.getTotalPatients(), completedPatients,
                 labProbability, xrayProbability, treatmentProbability,
-                arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime
+                arrivalTime, checkInTime, doctorTime, labTime, xrayTime, treatmentTime, endTime,
+                checkInUtilization, doctorUtilization, labUtilization, xRayUtilization, treatmentUtilization
         );
 
+        // Persist the simulation results using the data controller
         dataControlller.persistSimulationResults(simulationResults);
     }
 
