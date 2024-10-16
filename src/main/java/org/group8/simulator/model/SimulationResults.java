@@ -34,6 +34,9 @@ public class SimulationResults {
     @Column(name = "treatment_probability", nullable = false)
     private double treatmentProbability;
 
+    @Column(name = "no_treatment_probability", nullable = false)
+    private double noTreatmentProbability;
+
     @Column(name = "arrival_time", nullable = false)
     private double arrivalTime;
 
@@ -81,6 +84,7 @@ public class SimulationResults {
      * @param labProbability       the probability of being referred to the lab
      * @param xrayProbability      the probability of being referred to x-ray
      * @param treatmentProbability the probability of being referred to treatment
+     * @param noTreatmentProbability the probability of not being referred to treatment
      * @param arrivalTime          the average arrival time
      * @param checkInTime          the time spent at check-in
      * @param doctorTime           the time spent with the doctor
@@ -96,7 +100,7 @@ public class SimulationResults {
      */
     public SimulationResults(
             double averageTime, int totalPatients, int completedVisits,
-            double labProbability, double xrayProbability, double treatmentProbability,
+            double labProbability, double xrayProbability, double treatmentProbability, double noTreatmentProbability,
             double arrivalTime, double checkInTime, double doctorTime, double labTime,
             double xrayTime, double treatmentTime, double endTime,
             double checkInUtilization, double doctorUtilization, double labUtilization,
@@ -108,6 +112,7 @@ public class SimulationResults {
         this.labProbability = labProbability;
         this.xrayProbability = xrayProbability;
         this.treatmentProbability = treatmentProbability;
+        this.noTreatmentProbability = noTreatmentProbability;
         this.arrivalTime = arrivalTime;
         this.checkInTime = checkInTime;
         this.doctorTime = doctorTime;
@@ -168,6 +173,10 @@ public class SimulationResults {
 
     public double getTreatmentProbability() {
         return treatmentProbability;
+    }
+
+    public double getNoTreatmentProbability() {
+        return noTreatmentProbability;
     }
 
     public double getArrivalTime() {

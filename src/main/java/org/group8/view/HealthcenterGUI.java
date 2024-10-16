@@ -1231,7 +1231,8 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
                 statistics.append("--Probabilities\n\n");
                 statistics.append("Lab Probability: ").append(String.format("%.2f", selectedResult.getLabProbability())).append("\n");
                 statistics.append("X-ray Probability: ").append(String.format("%.2f", selectedResult.getXrayProbability())).append("\n");
-                statistics.append("Treatment Probability: ").append(String.format("%.2f", selectedResult.getTreatmentProbability())).append("\n\n");
+                statistics.append("Treatment Probability: ").append(String.format("%.2f", selectedResult.getTreatmentProbability())).append("\n");
+                statistics.append("Self care Probability: ").append(String.format("%.2f", selectedResult.getNoTreatmentProbability())).append("\n\n");
                 statistics.append("--Utilization Rates\n\n");
                 statistics.append("Check-In Utilization: ").append(String.format("%.2f%%", selectedResult.getCheckInUtilization() * 100)).append("\n");
                 statistics.append("Doctor Utilization: ").append(String.format("%.2f%%", selectedResult.getDoctorUtilization() * 100)).append("\n");
