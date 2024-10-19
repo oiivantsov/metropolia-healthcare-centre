@@ -165,6 +165,12 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
         }
     }
 
+    /**
+     * Pauses the simulation thread.
+     * <p>
+     * Sets the {@code pause} flag to {@code true}, halting the simulation.
+     * Synchronization ensures thread safety.
+     */
     @Override
     public void pauseThread() {
         // without synchronized block, the pause mechanism would not work, see race condition
@@ -173,6 +179,11 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
         }
     }
 
+    /**
+     * Resumes the simulation thread.
+     * <p>
+     * Sets the {@code pause} flag to {@code false} and notifies the waiting thread to continue.
+     */
     @Override
     public void resumeThread() {
         // Resumes the paused thread
@@ -182,6 +193,11 @@ public abstract class AbstractHealthCentre extends Thread implements IHealthCent
         }
     }
 
+    /**
+     * Checks if the simulation is running.
+     *
+     * @return {@code true} if the simulation is active, {@code false} if paused.
+     */
     @Override
     public boolean isRunning() {
         return !pause;
