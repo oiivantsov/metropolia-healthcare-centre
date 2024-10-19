@@ -78,11 +78,13 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     private Slider labProbabilitySlider;
     private Slider xrayProbabilitySlider;
     private Slider treatmentProbabilitySlider;
+    private Slider noTreatmentProbabilitySlider;
 
     // Labels to show the probability values
     private Label labProbabilityValue;
     private Label xrayProbabilityValue;
     private Label treatmentProbabilityValue;
+    private Label noTreatmentProbabilityValue;
 
     // Progress bar
     private ProgressBar progressBar;
@@ -488,7 +490,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     }
 
     /**
-     * Displays a modal dialog that allows the user to edit the probabilities for Lab, X-Ray, and Treatment.
+     * Displays a modal dialog that allows the user to edit the probabilities for Lab, X-Ray, Treatment, and No Treatment.
      * The dialog includes sliders to adjust each probability and applies the changes upon confirmation.
      *
      * <p>This method creates a modal dialog window that blocks interaction with other windows until the user
@@ -501,12 +503,13 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
      *   <li>Lab Probability</li>
      *   <li>X-Ray Probability</li>
      *   <li>Treatment Probability</li>
+     *   <li>No Treatment Probability</li>
      * </ul>
      *
      * <p>Components within the dialog:</p>
      * <ul>
      *   <li>Labels showing the current values of the sliders</li>
-     *   <li>Three sliders to adjust Lab, X-Ray, and Treatment probabilities</li>
+     *   <li>Four sliders to adjust Lab, X-Ray, Treatment, and No Treatment probabilities</li>
      *   <li>An "Apply Probabilities" button that saves the user's input and closes the dialog</li>
      * </ul>
      *
@@ -522,14 +525,17 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         labProbabilitySlider = createProbabilitySlider("Lab Probability", "LAB");
         xrayProbabilitySlider = createProbabilitySlider("X-Ray Probability", "XRAY");
         treatmentProbabilitySlider = createProbabilitySlider("Treatment Probability", "TREATMENT");
+        noTreatmentProbabilitySlider = createProbabilitySlider("No Treatment Probability", "NO_TREATMENT");
 
         labProbabilityValue = new Label("Lab: " + String.format("%.2f", labProbabilitySlider.getValue()));
         xrayProbabilityValue = new Label("X-Ray: " + String.format("%.2f", xrayProbabilitySlider.getValue()));
         treatmentProbabilityValue = new Label("Treatment: " + String.format("%.2f", treatmentProbabilitySlider.getValue()));
+        noTreatmentProbabilityValue = new Label("No Treatment: " + String.format("%.2f", noTreatmentProbabilitySlider.getValue()));
 
         labProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
         xrayProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
         treatmentProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
+        noTreatmentProbabilitySlider.valueProperty().addListener((observable, oldValue, newValue) -> updateProbabilityValues());
 
         Button applyProbabilitiesButton = new Button("Apply Probabilities");
 
@@ -537,7 +543,8 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
                     double labProbability = labProbabilitySlider.getValue();
                     double xrayProbability = xrayProbabilitySlider.getValue();
                     double treatmentProbability = treatmentProbabilitySlider.getValue();
-                    dataController.setProbabilities(labProbability, xrayProbability, treatmentProbability);
+                    double noTreatmentProbability = noTreatmentProbabilitySlider.getValue();
+                    dataController.setProbabilities(labProbability, xrayProbability, treatmentProbability, noTreatmentProbability);
                     dialog.close();
                 }
         );
@@ -553,17 +560,21 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
         HBox treatmentProbabilityBox = new HBox(10, new Label("Treatment Probability:"), treatmentProbabilitySlider, treatmentProbabilityValue);
         treatmentProbabilityBox.setAlignment(Pos.CENTER);
 
+        HBox noTreatmentProbabilityBox = new HBox(10, new Label("No Treatment Probability:"), noTreatmentProbabilitySlider, noTreatmentProbabilityValue);
+        noTreatmentProbabilityBox.setAlignment(Pos.CENTER);
+
         layout.getChildren().addAll(
                 labProbabilityBox,
                 xrayProbabilityBox,
                 treatmentProbabilityBox,
+                noTreatmentProbabilityBox,
                 applyProbabilitiesButton
         );
 
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(layout, 700, 250);
+        Scene scene = new Scene(layout, 700, 300);
         applyTheme(scene, isBlackTheme);
         dialog.setScene(scene);
         dialog.showAndWait();
@@ -1171,69 +1182,84 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
     }
 
     /**
-     * Displays a dialog with formatted simulation results.
+     * Displays a dialog with a list of completed simulations. When a simulation is selected, its detailed statistics are displayed.
      * <p>
      * This method fetches all the simulation results from the {@code dataController},
-     * and formats them into a human-readable form using a {@code StringBuilder}. The results
-     * include various statistics for each simulation such as simulation ID, average time,
-     * total patients, and probabilities for different events (lab, x-ray, treatment, etc.).
-     * The results are then displayed in a dialog (implementation of the actual dialog is omitted in this method).
+     * and presents a list of completed simulations. Upon selecting a specific simulation,
+     * the user will see full statistics for that simulation in a detailed view.
      * </p>
-     *
-     * <ul>
-     *     <li>Simulation ID</li>
-     *     <li>Average Time</li>
-     *     <li>Total Patients</li>
-     *     <li>Completed Visits</li>
-     *     <li>Lab, X-ray, and Treatment Probabilities</li>
-     *     <li>Arrival Time, Check-in Time, Doctor Time, Lab Time, X-ray Time, Treatment Time, End Time</li>
-     * </ul>
-     *
-     * The data is formatted with two decimal places for numerical values where applicable.
      *
      * @see SimulationResults
      * @see DataController#getSimulationResults()
      */
-
     public void showResultsDialog() {
         // Fetch all simulation results
         List<SimulationResults> results = dataController.getSimulationResults();
 
-        // Format the results into a readable format
-        StringBuilder statistics = new StringBuilder();
+        // Create a ListView to show the list of simulation IDs
+        ListView<String> listView = new ListView<>();
         for (SimulationResults result : results) {
-            statistics.append("Simulation ID: ").append(result.getSimulationId()).append("\n");
-            statistics.append("Average Time: ").append(String.format("%.2f", result.getAverageTime())).append("\n");
-            statistics.append("Total Patients: ").append(result.getTotalPatients()).append("\n");
-            statistics.append("Completed Visits: ").append(result.getCompletedVisits()).append("\n");
-            statistics.append("End Time: ").append(String.format("%.2f", result.getEndTime())).append("\n\n");
-            statistics.append("--Distiributions\n\n");
-            statistics.append("Arrival Time: ").append(result.getArrivalTime()).append("\n");
-            statistics.append("Check-in Time: ").append(result.getCheckInTime()).append("\n");
-            statistics.append("Doctor Time: ").append(result.getDoctorTime()).append("\n");
-            statistics.append("Lab Time: ").append(result.getLabTime()).append("\n");
-            statistics.append("X-ray Time: ").append(result.getXrayTime()).append("\n");
-            statistics.append("Treatment Time: ").append(result.getTreatmentTime()).append("\n\n");
-            statistics.append("--Probabilitys\n\n");
-            statistics.append("Lab Probability: ").append(String.format("%.2f", result.getLabProbability())).append("\n");
-            statistics.append("X-ray Probability: ").append(String.format("%.2f", result.getXrayProbability())).append("\n");
-            statistics.append("Treatment Probability: ").append(String.format("%.2f", result.getTreatmentProbability())).append("\n");
-            statistics.append("------------------------------\n");
+            listView.getItems().add("Simulation ID: " + result.getSimulationId());
         }
 
-        // Create a TextArea to display the results
-        TextArea textArea = new TextArea(statistics.toString());
-        textArea.setWrapText(true);  // Enable text wrapping
-        textArea.setEditable(false);   // Make it read-only
+        // Create a TextArea to display the detailed statistics of the selected simulation
+        TextArea detailsArea = new TextArea();
+        detailsArea.setWrapText(true);  // Enable text wrapping
+        detailsArea.setEditable(false);  // Make it read-only
 
-        // Wrap the TextArea in a ScrollPane
-        ScrollPane scrollPane = new ScrollPane(textArea);
-        scrollPane.setFitToWidth(true); // Allow the ScrollPane to fit to width
-        scrollPane.setFitToHeight(true); // Allow the ScrollPane to fit to height
+        // Listen for selection changes in the ListView and display the detailed statistics
+        listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Find the selected simulation by its ID
+                int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+                SimulationResults selectedResult = results.get(selectedIndex);
+
+                // Format the detailed statistics for the selected simulation
+                StringBuilder statistics = new StringBuilder();
+                statistics.append("Simulation ID: ").append(selectedResult.getSimulationId()).append("\n");
+                statistics.append("Average Time: ").append(String.format("%.2f", selectedResult.getAverageTime())).append("\n");
+                statistics.append("Total Patients: ").append(selectedResult.getTotalPatients()).append("\n");
+                statistics.append("Completed Visits: ").append(selectedResult.getCompletedVisits()).append("\n");
+                statistics.append("End Time: ").append(String.format("%.2f", selectedResult.getEndTime())).append("\n\n");
+                statistics.append("--Distributions\n\n");
+                statistics.append("Arrival Time: ").append(selectedResult.getArrivalTime()).append("\n");
+                statistics.append("Check-in Time: ").append(selectedResult.getCheckInTime()).append("\n");
+                statistics.append("Doctor Time: ").append(selectedResult.getDoctorTime()).append("\n");
+                statistics.append("Lab Time: ").append(selectedResult.getLabTime()).append("\n");
+                statistics.append("X-ray Time: ").append(selectedResult.getXrayTime()).append("\n");
+                statistics.append("Treatment Time: ").append(selectedResult.getTreatmentTime()).append("\n\n");
+                statistics.append("--Probabilities\n\n");
+                statistics.append("Lab Probability: ").append(String.format("%.2f", selectedResult.getLabProbability())).append("\n");
+                statistics.append("X-ray Probability: ").append(String.format("%.2f", selectedResult.getXrayProbability())).append("\n");
+                statistics.append("Treatment Probability: ").append(String.format("%.2f", selectedResult.getTreatmentProbability())).append("\n");
+                statistics.append("Self care Probability: ").append(String.format("%.2f", selectedResult.getNoTreatmentProbability())).append("\n\n");
+                statistics.append("--Utilization Rates\n\n");
+                statistics.append("Check-In Utilization: ").append(String.format("%.2f%%", selectedResult.getCheckInUtilization() * 100)).append("\n");
+                statistics.append("Doctor Utilization: ").append(String.format("%.2f%%", selectedResult.getDoctorUtilization() * 100)).append("\n");
+                statistics.append("Lab Utilization: ").append(String.format("%.2f%%", selectedResult.getLabUtilization() * 100)).append("\n");
+                statistics.append("X-ray Utilization: ").append(String.format("%.2f%%", selectedResult.getXrayUtilization() * 100)).append("\n");
+                statistics.append("Treatment Utilization: ").append(String.format("%.2f%%", selectedResult.getTreatmentUtilization() * 100)).append("\n");
+                statistics.append("------------------------------\n");
+
+                // Update the detailsArea with the selected simulation's statistics
+                detailsArea.setText(statistics.toString());
+            }
+        });
+
+        // Create a layout for the ListView and the details TextArea
+        HBox layout = new HBox(10);
+        layout.getChildren().addAll(listView, detailsArea);
+        layout.setPrefWidth(1000);  // Set preferred width for the layout
+        layout.setPrefHeight(600); // Set preferred height for the layout
+
+        // Wrap the layout in a ScrollPane
+        ScrollPane scrollPane = new ScrollPane(layout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
 
         // Create and configure the dialog
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Simulation Results");
+        dialog.setTitle("Completed Simulations");
         dialog.getDialogPane().setContent(scrollPane);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK); // Add an OK button
         dialog.setResizable(true); // Make the dialog resizable
@@ -1245,7 +1271,7 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
 
     /**
      * Updates the probability values displayed in the GUI based on the current
-     * values of the probability sliders for lab, X-ray, and treatment.
+     * values of the probability sliders for lab, X-ray, treatment, and no treatment.
      *
      * <p>This method first calculates the total of the probabilities from the
      * respective sliders. If the total exceeds 1, it reduces each slider's value
@@ -1254,18 +1280,23 @@ public class HealthcenterGUI extends Application implements IHealthcenterGUI {
      * to two decimal places.</p>
      */
     private void updateProbabilityValues() {
-        double total = labProbabilitySlider.getValue() + xrayProbabilitySlider.getValue() + treatmentProbabilitySlider.getValue();
+        double total = labProbabilitySlider.getValue()
+                + xrayProbabilitySlider.getValue()
+                + treatmentProbabilitySlider.getValue()
+                + noTreatmentProbabilitySlider.getValue();
 
         if (total > 1) {
             double excess = total - 1;
-            labProbabilitySlider.setValue(labProbabilitySlider.getValue() - excess / 3);
-            xrayProbabilitySlider.setValue(xrayProbabilitySlider.getValue() - excess / 3);
-            treatmentProbabilitySlider.setValue(treatmentProbabilitySlider.getValue() - excess / 3);
+            labProbabilitySlider.setValue(labProbabilitySlider.getValue() - excess / 4);
+            xrayProbabilitySlider.setValue(xrayProbabilitySlider.getValue() - excess / 4);
+            treatmentProbabilitySlider.setValue(treatmentProbabilitySlider.getValue() - excess / 4);
+            noTreatmentProbabilitySlider.setValue(noTreatmentProbabilitySlider.getValue() - excess / 4);
         }
 
         labProbabilityValue.setText("Lab: " + String.format("%.2f", labProbabilitySlider.getValue()));
         xrayProbabilityValue.setText("X-Ray: " + String.format("%.2f", xrayProbabilitySlider.getValue()));
         treatmentProbabilityValue.setText("Treatment: " + String.format("%.2f", treatmentProbabilitySlider.getValue()));
+        noTreatmentProbabilityValue.setText("No Treatment: " + String.format("%.2f", noTreatmentProbabilitySlider.getValue()));
     }
 
 
